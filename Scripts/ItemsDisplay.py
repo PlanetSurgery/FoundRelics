@@ -65,7 +65,7 @@ class ItemsDisplay(QWidget):
         start_x = (self.width() - group_width) // 2
         start_y = 0
 
-        border_pen = QPen(QColor(255, 255, 255))
+        border_pen = QPen(QColor(0, 0, 0))
         border_pen.setWidth(2)
         painter.setPen(QPen(QColor(255, 255, 255)))
         

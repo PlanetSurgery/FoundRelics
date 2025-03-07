@@ -28,7 +28,7 @@ _A Simple Query API Fetcher Tool_
 |--------------------------|--------|
 | Arcane Fragments         | ❌     |
 | Armor Gems               | ❌     |
-| FEnjin Gems              | ✅     |
+| Enjin Gems               | ✅     |
 | Flame Crystal            | ✅     |
 | Golden Grind Chest       | ✅     |
 | Guardian's Chest         | ✅     |

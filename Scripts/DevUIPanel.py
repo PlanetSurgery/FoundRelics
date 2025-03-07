@@ -52,6 +52,12 @@ class DevUIPanel(QFrame):
         self.run_count_label = QLabel("Run Count: 0")
         content_layout.addWidget(self.run_count_label)
 
+        self.run_time_label = QLabel("Run Time: 0")
+        content_layout.addWidget(self.run_time_label)
+
+        self.fav_map = QLabel("Favorite Map: N/A")
+        content_layout.addWidget(self.fav_map)
+
         self.log_field = QPlainTextEdit()
         self.log_field.setPlainText("Application has started.")
         content_layout.addWidget(self.log_field)
@@ -95,6 +101,12 @@ class DevUIPanel(QFrame):
 
     def set_run_count(self, count):
         self.run_count_label.setText(f"Run Count: {count}")
+
+    def set_run_time(self, time_taken):
+        self.run_time_label.setText(f"Run Time: {time_taken}")
+
+    def set_fav_map(self, map_name):
+        self.fav_map.setText(f"Favorite Map: {map_name}")
 
     def log_message(self, msg):
         self.log_field.setPlainText(msg)

@@ -1,12 +1,27 @@
-import sys, os, random, json, requests
+import sys, os, json, requests
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QStackedWidget, QSizePolicy)
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot, QObject
 from Scripts.DevUIPanel import DevUIPanel
 from Scripts.JSONDataPanel import JSONDataPanel
 from Scripts.ItemTrackerPanel import ItemTrackerPanel
 from Scripts.ItemsDisplay import ItemsDisplay
 from Scripts.Buttons import MainPanelButtons  # New widget with the three-button row + RESET + UI
+
+# Worker class to fetch data in a separate thread.
+class DataFetcher(QObject):
+    data_fetched = pyqtSignal(dict)
+    error = pyqtSignal(str)
+
+    @pyqtSlot()
+    def fetch(self):
+        try:
+            response = requests.get("http://localhost:11990/Player")
+            response.raise_for_status()
+            data = response.json()
+            self.data_fetched.emit(data)
+        except Exception as e:
+            self.error.emit(str(e))
 
 class SidePanelContainer(QWidget):
     """
@@ -97,6 +112,7 @@ class SidePanelContainer(QWidget):
 class FullScreenOverlay(QMainWindow):
     def __init__(self):
         super().__init__()
+
         # Frameless full-screen with transparency.
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -104,9 +120,14 @@ class FullScreenOverlay(QMainWindow):
 
         self.selected_items = []  # references from item tracker
 
-        # Shared variable: total number of items (default 10)
+        # Shared variable: total number of items (default 13)
         self.num_items = 13
-        
+        self.run_count = 0
+        self.run_time_total = 0
+
+        # Initialize a dictionary to track map play counts.
+        self.map_counts = {}
+
         # Create central widget for absolute positioning.
         central_widget = QWidget(self)
         central_widget.setObjectName("central_widget")
@@ -123,8 +144,6 @@ class FullScreenOverlay(QMainWindow):
         left_layout.setSpacing(15)
 
         self.dev_panel = DevUIPanel()  # Main panel holding name, level, count, etc.
-        # Change dev_panel background to #333333 if needed in DevUIPanel itself
-        # (or use its own stylesheet within DevUIPanel)
         self.json_panel = JSONDataPanel()
         self.json_panel.setVisible(False)
         self.item_selector_panel = ItemTrackerPanel()
@@ -132,7 +151,7 @@ class FullScreenOverlay(QMainWindow):
 
         # Extend dev_panel height to accommodate new buttons.
         common_panel_width = 300
-        common_panel_height = 300  # Extended height
+        common_panel_height = 330  # Extended height
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
         self.json_panel.setFixedSize(common_panel_width, 400)
         self.item_selector_panel.setFixedSize(common_panel_width, 400)
@@ -174,13 +193,13 @@ class FullScreenOverlay(QMainWindow):
         self.fetch_timer.setSingleShot(True)
         self.fetch_timer.start(3000)
 
+        # Use a QTimer to trigger data updates, which now run in a separate thread.
         self.data_timer = QTimer(self)
         self.data_timer.timeout.connect(self.update_player_data)
         self.data_timer.start(5000)
 
         self.last_progress = None
         self.last_gold_coins = None
-        self.run_count = 0
 
         # Connect DevUIPanel buttons.
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)
@@ -238,74 +257,89 @@ class FullScreenOverlay(QMainWindow):
         self.dev_panel.log_message("Fetching data...")
 
     def update_player_data(self):
-        try:
-            response = requests.get("http://localhost:11990/Player")
-            response.raise_for_status()
-            data = response.json()
-            if data:
-                self.dev_panel.log_message("We have grabbed data.")
-                self.dev_panel.set_player_name(data.get("PlayerName", ""))
-                self.dev_panel.set_player_level(str(data.get("PlayerLevelProgress", "")))
-                new_progress = data.get("PlayerLevelProgress", None)
-                last_adv = data.get("LastAdventure", {})
-                gold_coins = None
-                for item in last_adv.get("Items", []):
-                    if item.get("Name", "").strip() == "Gold Coins":
-                        gold_coins = item.get("Amount", None)
-                        break
+        # Start the data fetching in a separate thread.
+        self.dev_panel.log_message("Fetching data in background...")
+        self.thread = QThread()
+        self.worker = DataFetcher()
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.fetch)
+        self.worker.data_fetched.connect(self.handle_data)
+        self.worker.error.connect(self.handle_error)
+        # Clean up the thread once done.
+        self.worker.data_fetched.connect(self.thread.quit)
+        self.worker.data_fetched.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
 
-                if new_progress is not None:
-                    if self.last_progress is None:
-                        # First fetch: initialize without incrementing run count.
-                        self.last_progress = new_progress
-                        self.last_gold_coins = gold_coins
-                    elif new_progress != self.last_progress and gold_coins != self.last_gold_coins:
-                        # A new run is confirmed; increment run count.
-                        self.run_count += 1
-                        self.last_progress = new_progress
-                        self.last_gold_coins = gold_coins
+    def handle_data(self, data):
+        if data:
+            self.dev_panel.log_message("We have grabbed data.")
+            self.dev_panel.set_player_name(data.get("PlayerName", ""))
+            self.dev_panel.set_player_level(str(data.get("PlayerLevelProgress", "")))
+            
+            new_progress = data.get("PlayerLevelProgress", None)
+            last_adv = data.get("LastAdventure", {})
+            gold_coins = None
+            for item in last_adv.get("Items", []):
+                if item.get("Name", "").strip() == "Gold Coins":
+                    gold_coins = item.get("Amount", None)
+                    break
 
-                        # Check for "Golden Grind Chest" using substring matching on the item name.
-                        #chest_found = any("Golden Grind Chest" in item.get("Name", "") for item in last_adv.get("Items", []))
-                        #if chest_found:
-                        #    import os
-                        #    self.dev_panel.log_message("Found Chest")
-                        #    index = -1;
-                        #    for icon in self.item_selector_panel.selected_items:
-                        #        index =+ 1
-                        #        base_name = os.path.basename(icon.file_path).strip().lower()
-                        #        if "golden grind chest" in base_name:
-                        #            try:
-                        #                self.items_display.item_counts[index] += 1
-                        #            except Exception as e:
-                        #                self.dev_panel.log_message("Error updating chest count: " + str(e))
-                        #        else:
-                        #            self.dev_panel.log_message("Error locating chest slot. Contact admin if this persists.")
-                                    
-                        import os
-                        # For each selected icon, check if its file name (without extension) matches any item in LastAdventure>Items.
-                        index = -1
-                        for icon in self.item_selector_panel.selected_items:
-                            index += 1
-                            base_name = os.path.splitext(os.path.basename(icon.file_path))[0].strip()
-                            self.dev_panel.log_message("Checking icon: " + base_name)
-                            match_found = any(base_name in item.get("Name", "") for item in last_adv.get("Items", []))
-                            if match_found:
-                                try:
-                                    self.items_display.item_counts[index] += 1
-                                except Exception as e:
-                                    self.dev_panel.log_message("Error updating count for " + base_name + ": " + str(e))
-                            #else:
-                                #self.dev_panel.log_message("No matching item found for icon " + base_name)
+            if new_progress is not None:
+                if self.last_progress is None:
+                    # First fetch: initialize without incrementing run count.
+                    self.last_progress = new_progress
+                    self.last_gold_coins = gold_coins
+                elif new_progress != self.last_progress and gold_coins != self.last_gold_coins:
+                    # A new run is confirmed; increment run count.
+                    self.run_count += 1
+                    self.last_progress = new_progress
+                    self.last_gold_coins = gold_coins
+                    
+                    # Accumulate run time.
+                    time_taken = data.get("TimeTaken", 0)
+                    try:
+                        time_taken = float(time_taken)
+                    except Exception:
+                        time_taken = 0
+                    self.run_time_total += time_taken
 
-                self.dev_panel.set_run_count(self.run_count)
-                json_text = json.dumps(data, indent=2)
-                self.json_panel.set_json_text(json_text)
-                self.dev_panel.json_button.setEnabled(True)
-            else:
-                self.dev_panel.log_message("Failed to load data: Empty response.")
-        except requests.exceptions.RequestException as e:
-            self.dev_panel.log_message("Failed to load data: " + str(e))
+                    # Update map counts using LastAdventure>AdventureName.
+                    adventure_name = last_adv.get("AdventureName", None)
+                    if adventure_name:
+                        if adventure_name in self.map_counts:
+                            self.map_counts[adventure_name] += 1
+                        else:
+                            self.map_counts[adventure_name] = 1
+
+                        # Determine the favorite map (most played).
+                        favorite_map = max(self.map_counts, key=self.map_counts.get)
+                        self.dev_panel.set_favorite_map(favorite_map)
+
+                    # For each selected icon, check if its file name matches any item in LastAdventure>Items.
+                    import os
+                    index = -1
+                    for icon in self.item_selector_panel.selected_items:
+                        index += 1
+                        base_name = os.path.splitext(os.path.basename(icon.file_path))[0].strip()
+                        self.dev_panel.log_message("Checking icon: " + base_name)
+                        match_found = any(base_name in item.get("Name", "") for item in last_adv.get("Items", []))
+                        if match_found:
+                            try:
+                                self.items_display.item_counts[index] += 1
+                            except Exception as e:
+                                self.dev_panel.log_message("Error updating count for " + base_name + ": " + str(e))
+
+            self.dev_panel.set_run_count(self.run_count)
+            self.dev_panel.set_run_time(self.run_time_total)
+            json_text = json.dumps(data, indent=2)
+            self.json_panel.set_json_text(json_text)
+            self.dev_panel.json_button.setEnabled(True)
+        else:
+            self.dev_panel.log_message("Failed to load data: Empty response.")
+
+    def handle_error(self, error_msg):
+        self.dev_panel.log_message("Failed to load data: " + error_msg)
 
     def toggle_json_panel(self):
         is_visible = not self.json_panel.isVisible()

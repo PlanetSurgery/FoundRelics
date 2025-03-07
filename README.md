@@ -29,6 +29,7 @@ _A Simple Query API Fetcher Tool_
 | Arcane Fragments         | ❌     |
 | Flame Crystal            | ✅     |
 | Golden Grind Chest       | ✅     |
+| Guardian's Chest         | ✅     |
 | Sunken Treasure Trove    | ✅     |
 | Void Satchel             | ✅     |
 

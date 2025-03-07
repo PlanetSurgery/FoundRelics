@@ -27,6 +27,7 @@ _A Simple Query API Fetcher Tool_
 | Item                     | Status |
 |--------------------------|--------|
 | Arcane Fragments         | ❌     |
+| Armor Gems               | ❌     |
 | Flame Crystal            | ✅     |
 | Golden Grind Chest       | ✅     |
 | Guardian's Chest         | ✅     |

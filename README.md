@@ -32,6 +32,7 @@ _A Simple Query API Fetcher Tool_
 | Flame Crystal            | ✅     |
 | Golden Grind Chest       | ✅     |
 | Guardian's Chest         | ✅     |
+| Mysterious Nest          | ✅     |
 | Sunken Treasure Trove    | ✅     |
 | Void Satchel             | ✅     |
 

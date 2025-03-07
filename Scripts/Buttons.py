@@ -169,7 +169,7 @@ class MainPanelButtons(QWidget):
         # Define sizes for the buttons.
         top_button_size = 38
         bottom_button_width = 70
-        bottom_button_height = 40
+        bottom_button_height = 30
 
         # Create top row buttons.
         self.plus_button = QPushButton("+")

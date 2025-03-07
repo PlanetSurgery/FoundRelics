@@ -26,10 +26,11 @@ _A Simple Query API Fetcher Tool_
 
 | Item                     | Status |
 |--------------------------|--------|
-| Void Satchel             | ✅     |
+| Arcane Fragments         | ❌     |
+| Flame Crystal            | ✅     |
 | Golden Grind Chest       | ✅     |
 | Sunken Treasure Trove    | ✅     |
-| Arcane Fragments         | ❌     |
+| Void Satchel             | ✅     |
 
 ---
 

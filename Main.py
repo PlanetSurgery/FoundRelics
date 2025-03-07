@@ -319,14 +319,21 @@ class FullScreenOverlay(QMainWindow):
                     # For each selected icon, check if its file name matches any item in LastAdventure>Items.
                     import os
                     index = -1
+
+                    # Assuming index is defined and initialized before the loop (e.g., index = -1)
                     for icon in self.item_selector_panel.selected_items:
                         index += 1
                         base_name = os.path.splitext(os.path.basename(icon.file_path))[0].strip()
                         self.dev_panel.log_message("Checking icon: " + base_name)
-                        match_found = any(base_name in item.get("Name", "") for item in last_adv.get("Items", []))
-                        if match_found:
+                        # Find the first matching item from LastAdventure>Items
+                        matching_item = next((item for item in last_adv.get("Items", []) if base_name in item.get("Name", "")), None)
+                        if matching_item:
                             try:
-                                self.items_display.item_counts[index] += 1
+                                if base_name == "Enjin Gem" or base_name == "Flame Crystal":
+                                    count = matching_item.get("Amount", 1)
+                                    self.items_display.item_counts[index] += count
+                                else:
+                                    self.items_display.item_counts[index] += 1
                             except Exception as e:
                                 self.dev_panel.log_message("Error updating count for " + base_name + ": " + str(e))
 

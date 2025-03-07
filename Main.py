@@ -105,7 +105,7 @@ class FullScreenOverlay(QMainWindow):
         self.selected_items = []  # references from item tracker
 
         # Shared variable: total number of items (default 10)
-        self.num_items = 12
+        self.num_items = 13
         
         # Create central widget for absolute positioning.
         central_widget = QWidget(self)

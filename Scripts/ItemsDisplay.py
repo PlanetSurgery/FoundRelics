@@ -1,4 +1,3 @@
-import os
 from PyQt5.QtWidgets import QWidget, QSizePolicy
 from PyQt5.QtGui import QPainter, QPen, QPixmap, QColor, QFont
 from PyQt5.QtCore import Qt, QRect, QTimer
@@ -24,6 +23,8 @@ class ItemsDisplay(QWidget):
         self.original_icon_paths = [it[1] for it in items]
         # Start with these icons.
         self.icons = list(self.original_icons)
+        # Maintain a separate list for current file paths (can be updated on selection)
+        self.current_icon_paths = list(self.original_icon_paths)
 
         # Timer to update layout periodically.
         self.position_timer = QTimer(self)
@@ -33,20 +34,27 @@ class ItemsDisplay(QWidget):
     def load_placeholder_icons(self):
         # Create a grey, semi-transparent pixmap as a placeholder.
         placeholder = QPixmap(100, 100)
-        # Create a QColor with alpha for see-through effect.
         semi_transparent_grey = QColor(128, 128, 128, 150)
         placeholder.fill(semi_transparent_grey)
         # Return a list with the same placeholder for each item.
         return [(placeholder, "placeholder")] * self.num_items
 
-    def update_icons(self, selected_pixmaps):
+    def update_icons(self, selected_pixmaps, selected_paths):
+        """
+        Update both the displayed pixmaps and their associated file paths based on selection.
+        If fewer than the available slots are selected, the remainder show the original icons and paths.
+        """
         new_icons = []
+        new_paths = []
         for i in range(self.num_items):
             if i < len(selected_pixmaps):
                 new_icons.append(selected_pixmaps[i])
+                new_paths.append(selected_paths[i])
             else:
                 new_icons.append(self.original_icons[i])
+                new_paths.append(self.original_icon_paths[i])
         self.icons = new_icons
+        self.current_icon_paths = new_paths
         self.update()
 
     def paintEvent(self, event):
@@ -71,8 +79,8 @@ class ItemsDisplay(QWidget):
         
         # Create a bold, larger font for item values.
         font = painter.font()
-        font.setPointSize(14)  # Increase the font size here
-        font.setBold(True)     # Set font to bold
+        font.setPointSize(14)
+        font.setBold(True)
         painter.setFont(font)
         
         for i in range(self.num_items):
@@ -86,7 +94,7 @@ class ItemsDisplay(QWidget):
             text_rect = QRect(rect.x(), rect.y() + box_size + 5, box_size, 30)
             painter.drawText(text_rect, Qt.AlignCenter, str(self.item_counts[i]))
             
-            # Draw per–item buttons (these remain here)
+            # Draw per–item buttons if enabled.
             if self.show_individual_buttons:
                 button_width = (box_size - padding) // 2
                 button_height = button_width
@@ -107,9 +115,6 @@ class ItemsDisplay(QWidget):
             painter.drawRect(rect)
             painter.setPen(QPen(QColor(255, 255, 255)))
         
-        # Removed the call to draw colored control buttons.
-        # (These buttons are now managed in the Buttons module.)
-
     def mousePressEvent(self, event):
         if self.show_individual_buttons:
             padding = 20
@@ -131,14 +136,21 @@ class ItemsDisplay(QWidget):
                 button_y = text_rect.y() + text_rect.height() + 5
                 minus_rect = QRect(rect.x(), button_y, button_width, button_height)
                 plus_rect = QRect(rect.x() + button_width + padding, button_y, button_width, button_height)
-                if minus_rect.contains(event.pos()):
-                    self.item_counts[i] -= 1
-                    self.update()
-                    return
-                elif plus_rect.contains(event.pos()):
-                    self.item_counts[i] += 1
-                    self.update()
-                    return
+                
+                # Use the current file path for checking button behavior.
+                base_name = self.current_icon_paths[i]
+                adjust_value = 1
+                count = self.item_counts[i]
+                if "Enjin Gem" in base_name:
+                    adjust_value = 0.01
 
-        # The colored control buttons click handling has been removed
-        # (they will now be managed by the ControlButtons widget).
+                if minus_rect.contains(event.pos()):
+                    count -= adjust_value
+                elif plus_rect.contains(event.pos()):
+                    count += adjust_value
+                    
+                self.item_counts[i] = count
+                self.item_counts[i] = round(self.item_counts[i], 2)  # Round to 2 decimals
+                self.update()
+
+        # Other mouse events can be handled here.

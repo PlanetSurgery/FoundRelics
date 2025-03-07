@@ -1,6 +1,6 @@
 import os
 from PyQt5.QtWidgets import QWidget, QSizePolicy
-from PyQt5.QtGui import QPainter, QPen, QPixmap, QColor
+from PyQt5.QtGui import QPainter, QPen, QPixmap, QColor, QFont
 from PyQt5.QtCore import Qt, QRect, QTimer
 
 class ItemsDisplay(QWidget):
@@ -68,6 +68,12 @@ class ItemsDisplay(QWidget):
         border_pen = QPen(QColor(255, 255, 255))
         border_pen.setWidth(2)
         painter.setPen(QPen(QColor(255, 255, 255)))
+        
+        # Create a bold, larger font for item values.
+        font = painter.font()
+        font.setPointSize(14)  # Increase the font size here
+        font.setBold(True)     # Set font to bold
+        painter.setFont(font)
         
         for i in range(self.num_items):
             rect = QRect(start_x + i * (box_size + padding), start_y, box_size, box_size)

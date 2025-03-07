@@ -314,7 +314,7 @@ class FullScreenOverlay(QMainWindow):
 
                         # Determine the favorite map (most played).
                         favorite_map = max(self.map_counts, key=self.map_counts.get)
-                        self.dev_panel.set_favorite_map(favorite_map)
+                        self.dev_panel.set_fav_map(favorite_map)
 
                     # For each selected icon, check if its file name matches any item in LastAdventure>Items.
                     import os

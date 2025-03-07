@@ -14,10 +14,10 @@ _A Simple Query API Fetcher Tool_
 2. **Initial Setup:**  
    Run the `Setup.bat` file to install any required modules.
 
-3. **Settings:** 
+3. **Settings:**  
    Make sure you have the Settings>Options>Query API turned on.
 
-5. **Adding New Items:**  
+4. **Adding New Items:**  
    When providing new items, ensure that the file name exactly matches its name in the JSON data.
 
    ============

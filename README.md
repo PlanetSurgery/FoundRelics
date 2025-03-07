@@ -17,7 +17,7 @@ _A Simple Query API Fetcher Tool_
 3. **Settings:**
    Make sure you have the Settings>Options>Query API turned on.
 
-4. **Adding New Items:**  
+5. **Adding New Items:**  
    When providing new items, ensure that the file name exactly matches its name in the JSON data.
 
    ============

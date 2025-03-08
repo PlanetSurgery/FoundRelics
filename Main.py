@@ -32,7 +32,6 @@ class SidePanelContainer(QWidget):
     def __init__(self, panels_widget, parent=None):
         super().__init__(parent)
         self.is_collapsed = False  # track collapsed state
-        self.change = False
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -113,6 +112,7 @@ class SidePanelContainer(QWidget):
 class FullScreenOverlay(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.change = False
 
         # Frameless full-screen with transparency.
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)

@@ -277,9 +277,6 @@ class FullScreenOverlay(QMainWindow):
         self.thread.start()
 
     def handle_data(self, data):
-        if self.skip:
-            self.skip = False
-            return
         if data:
             self.dev_panel.log_message("We have grabbed data.")
             self.dev_panel.set_player_name(data.get("PlayerName", ""))
@@ -314,7 +311,6 @@ class FullScreenOverlay(QMainWindow):
                 if item.get("Name", "").strip() == "Gold Coins":
                     gold_coins = item.get("Amount", None)
                     break
-
             if new_progress is not None and self.last_progress is not None:
                 changed = new_progress - self.last_progress
                 if 0 < changed <= 500:
@@ -326,10 +322,15 @@ class FullScreenOverlay(QMainWindow):
                 elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins) and (self.change is False or (self.change is True and gold_coins is not None)):
                     self.change = False
                     # A new run is confirmed; increment run count.
-                    if gold_coins is not None:
-                        self.run_count += 1
                     self.last_progress = new_progress
                     self.last_gold_coins = gold_coins
+
+                    if self.skip:
+                        self.skip = False
+                        return
+                        
+                    if gold_coins is not None:
+                        self.run_count += 1
                     
                     # Accumulate run time.
                     time_taken = data.get("TimeTaken", 0)

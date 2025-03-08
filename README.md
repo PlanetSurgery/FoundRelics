@@ -5,6 +5,8 @@ _A Simple Query API Fetcher Tool_
 
 ---
 
+![alt text](https://i.ibb.co/C5ZpZLVC/Lost-Relics-3-8-2025-10-17-56-AM-removebg-preview-1.png)
+
 ### Setup Instructions
    *Tip: This tool is still a WIP, so you may run into issues during setup and use, especially use. This is not fully tested. Some items do not work and run count bugs out after portal boss, so does not count boss runs at this moment; Run Time and the "Earned" labels are nulled as well.*
 
@@ -24,7 +26,7 @@ _A Simple Query API Fetcher Tool_
 
 ### Tested Items (In Communication w/ Dev Team to Fix)
 
-| Item                     | Status | ![alt text](https://i.ibb.co/C5ZpZLVC/Lost-Relics-3-8-2025-10-17-56-AM-removebg-preview-1.png)
+| Item                     | Status | 
 |--------------------------|--------|
 | Arcane Fragments         | ❌     |
 | Armor Gems               | ❌     |

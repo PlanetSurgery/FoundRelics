@@ -11,7 +11,8 @@ _A Simple Query API Fetcher Tool_
    *Tip: This tool is still a WIP, so you may run into issues during setup and use. 
     This is not fully tested. Some items do not work and run count bugs out after portal boss, so does not count boss runs at this moment; 
     Run Time and the "Earned" labels are nulled as well until finished implementation.
-    This app runs on two threads.*
+    This app runs on two threads.
+    Untradable items currently add to market values -- communicating with dev to change.*
 
 1. **Install Python:**  
    Ensure you have Python installed on your machine. If not, download it [here](https://www.python.org/downloads/).

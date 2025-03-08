@@ -151,7 +151,7 @@ class FullScreenOverlay(QMainWindow):
 
         # Extend dev_panel height to accommodate new buttons.
         common_panel_width = 300
-        common_panel_height = 330  # Extended height
+        common_panel_height = 420  # Extended height
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
         self.json_panel.setFixedSize(common_panel_width, 400)
         self.item_selector_panel.setFixedSize(common_panel_width, 400)

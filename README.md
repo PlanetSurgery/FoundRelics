@@ -6,7 +6,7 @@ _A Simple Query API Fetcher Tool_
 ---
 
 ### Setup Instructions
-   *Tip: This tool is still a WIP, so you may run into issues during setup and use, especially use. This is not fully tested. Fragments currently don't work.*
+   *Tip: This tool is still a WIP, so you may run into issues during setup and use, especially use. This is not fully tested. Some items do not work and portal boss trips out run count.*
 
 1. **Install Python:**  
    Ensure you have Python installed on your machine. If not, download it [here](https://www.python.org/downloads/).

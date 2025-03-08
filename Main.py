@@ -32,6 +32,7 @@ class SidePanelContainer(QWidget):
     def __init__(self, panels_widget, parent=None):
         super().__init__(parent)
         self.is_collapsed = False  # track collapsed state
+        self.change = False
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -201,8 +202,8 @@ class FullScreenOverlay(QMainWindow):
         self.data_timer.timeout.connect(self.update_player_data)
         self.data_timer.start(5000)
 
-        self.last_progress = None
-        self.last_gold_coins = None
+        self.last_progress = 0
+        self.last_gold_coins = 0
 
         # Connect DevUIPanel buttons.
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)
@@ -311,7 +312,6 @@ class FullScreenOverlay(QMainWindow):
                     break
 
             if new_progress is not None and self.last_progress is not None:
-                change = False
                 changed = new_progress - self.last_progress
                 if 0 < changed <= 500:
                     change = True
@@ -320,6 +320,7 @@ class FullScreenOverlay(QMainWindow):
                     self.last_progress = new_progress
                     self.last_gold_coins = gold_coins
                 elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins) and (change is False or (change is True and gold_coins is not None)):
+                    change = False
                     # A new run is confirmed; increment run count.
                     if gold_coins is not None:
                         self.run_count += 1

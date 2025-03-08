@@ -40,5 +40,5 @@ _A Simple Query API Fetcher Tool_
 
 ---
 
-# 🎥 Watch the Video: FoundRelics - A Simple Query API Fetcher Tool
-[![FoundRelics - A Simple Query API Fetcher Tool](https://img.youtube.com/vi/7pXumxXoP04/maxresdefault.jpg)](https://www.youtube.com/watch?v=7pXumxXoP04)
+# 🎥 Watch the Video (Outdated): FoundRelics - Loot Tracker Tool
+[![FoundRelics - Loot Tracker Tool](https://img.youtube.com/vi/7pXumxXoP04/maxresdefault.jpg)](https://www.youtube.com/watch?v=7pXumxXoP04)

@@ -310,7 +310,7 @@ class FullScreenOverlay(QMainWindow):
                     gold_coins = item.get("Amount", None)
                     break
 
-            if new_progress is not None:
+            if new_progress is not None and self.last_progress is not None:
                 change = False
                 changed = new_progress - self.last_progress
                 if 0 < changed <= 500:

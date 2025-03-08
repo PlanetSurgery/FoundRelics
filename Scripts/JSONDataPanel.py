@@ -13,7 +13,7 @@ class JSONDataPanel(QFrame):
         self.setStyleSheet(f"""
             QFrame#JSONPanel {{
                 background-color: #333333; 
-                border: 2px solid #007FFF;
+                border: 2px solid #002244;
                 border-radius: 4px;
             }}
             QLabel {{

@@ -6,7 +6,7 @@ _A Simple Query API Fetcher Tool_
 ---
 
 ### Setup Instructions
-   *Tip: This tool is still a WIP, so you may run into issues during setup and use, especially use. This is not fully tested. Some items do not work and run count bugs out after portal boss, so does not count it temporarily. App will also crash upon opening the item selector panel twice; gotta love coding!*
+   *Tip: This tool is still a WIP, so you may run into issues during setup and use, especially use. This is not fully tested. Some items do not work and run count bugs out after portal boss, so does not count it temporarily.*
 
 1. **Install Python:**  
    Ensure you have Python installed on your machine. If not, download it [here](https://www.python.org/downloads/).

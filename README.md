@@ -22,7 +22,7 @@ _A Simple Query API Fetcher Tool_
 
    ============
 
-### Tested Items
+### Tested Items (In Communication w/ Dev Team to Fix)
 
 | Item                     | Status |
 |--------------------------|--------|

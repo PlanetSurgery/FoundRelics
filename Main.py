@@ -372,7 +372,7 @@ class FullScreenOverlay(QMainWindow):
                 default_paths = set(self.items_display.original_icon_paths)
                 self.item_selector_panel.highlight_defaults(default_paths)
             selected_pixmaps = self.item_selector_panel.get_selected_pixmaps()
-            self.items_display.update_icons(selected_pixmaps, None)
+            self.items_display.update_icons(selected_pixmaps, self.items_display.current_icon_paths)
         else:
             self.dev_panel.item_selector_button.setText("Show Tracked Items")
 

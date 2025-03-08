@@ -349,10 +349,11 @@ class FullScreenOverlay(QMainWindow):
                             market_value = float(item.get("MarketValue", 0))
                         except (ValueError, TypeError):
                             market_value = 0
-                        if item.get("IsBlockchain", False):
-                            market_enj_total += market_value
-                        else:
-                            market_gold_total += market_value
+                        if item.get("Name", None) != "Enjin Gem" and item.get("Name", None) != "Waygate Orb":
+                            if item.get("IsBlockchain", False):
+                                market_enj_total += market_value
+                            else:
+                                market_gold_total += market_value
 
                     # Add the new values to the cumulative totals.
                     self.market_gold += market_gold_total
@@ -379,7 +380,7 @@ class FullScreenOverlay(QMainWindow):
                                         count = round(matching_item.get("Amount", 1) / 100, 2)
                                     else:
                                         count = matching_item.get("Amount", 1)
-                                    self.items_display.item_counts[index] += count
+                                    self.items_display.item_counts[index] += round(count, 2)
                                 else:
                                     self.items_display.item_counts[index] += 1
                             except Exception as e:

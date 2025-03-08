@@ -349,7 +349,7 @@ class FullScreenOverlay(QMainWindow):
                             market_value = float(item.get("MarketValue", 0))
                         except (ValueError, TypeError):
                             market_value = 0
-                        if item.get("Name", None) != "Enjin Gem" and item.get("Name", None) != "Waygate Orb":
+                        if item.get("Name", None) != "Enjin Gem" and item.get("Name", None) != "Waygate Orb" and item.get("Name", None) != "Gold Coins":
                             if item.get("IsBlockchain", False):
                                 market_enj_total += market_value
                             else:

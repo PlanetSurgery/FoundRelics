@@ -124,6 +124,9 @@ class FullScreenOverlay(QMainWindow):
         self.num_items = 13
         self.run_count = 0
         self.run_time_total = 0
+        self.market_gold = 0
+        self.market_enj = 0
+
 
         # Initialize a dictionary to track map play counts.
         self.map_counts = {}
@@ -338,6 +341,26 @@ class FullScreenOverlay(QMainWindow):
                         # Determine the favorite map (most played).
                         favorite_map = max(self.map_counts, key=self.map_counts.get)
                         self.dev_panel.set_fav_map(favorite_map)
+                        
+                    market_gold_total = 0
+                    market_enj_total = 0
+                    for item in last_adv.get("Items", []):
+                        try:
+                            market_value = float(item.get("MarketValue", 0))
+                        except (ValueError, TypeError):
+                            market_value = 0
+                        if item.get("IsBlockchain", False):
+                            market_enj_total += market_value
+                        else:
+                            market_gold_total += market_value
+
+                    # Add the new values to the cumulative totals.
+                    self.market_gold += market_gold_total
+                    self.market_enj += market_enj_total
+
+                    # Update the display (formatted with commas).
+                    self.dev_panel.set_market_gold("{:,}".format(self.market_gold))
+                    self.dev_panel.set_market_enj("{:,}".format(self.market_enj))
 
                     # For each selected icon, check if its file name matches any item in LastAdventure>Items.
                     import os

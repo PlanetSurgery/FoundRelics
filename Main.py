@@ -275,8 +275,30 @@ class FullScreenOverlay(QMainWindow):
         if data:
             self.dev_panel.log_message("We have grabbed data.")
             self.dev_panel.set_player_name(data.get("PlayerName", ""))
-            self.dev_panel.set_player_level(str(data.get("PlayerLevelProgress", "")))
             
+            # Extract current XP and max XP, ensuring they are integers
+            try:
+                current_xp = int(data.get("PlayerLevelProgress", 0))
+            except (ValueError, TypeError):
+                current_xp = 0
+
+            try:
+                max_xp = int(data.get("PlayerLevelMax", 0))
+            except (ValueError, TypeError):
+                max_xp = 0
+
+            # Format the numbers with commas
+            formatted_current = "{:,}".format(current_xp)
+            formatted_max = "{:,}".format(max_xp)
+
+            # Calculate the percentage (avoid division by zero)
+            percentage = (current_xp / max_xp) * 100 if max_xp != 0 else 0
+
+            # Construct the final string with "xp" added after the numbers
+            final_string = f"{formatted_current} XP / {formatted_max} XP || {percentage:.0f}%"
+
+            self.dev_panel.set_player_level(final_string)
+
             new_progress = data.get("PlayerLevelProgress", None)
             last_adv = data.get("LastAdventure", {})
             gold_coins = None

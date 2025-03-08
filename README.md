@@ -24,7 +24,7 @@ _A Simple Query API Fetcher Tool_
 
 ### Tested Items (In Communication w/ Dev Team to Fix)
 
-| Item                     | Status |
+| Item                     | Status | ![alt text](https://i.ibb.co/C5ZpZLVC/Lost-Relics-3-8-2025-10-17-56-AM-removebg-preview-1.png)
 |--------------------------|--------|
 | Arcane Fragments         | ❌     |
 | Armor Gems               | ❌     |
@@ -40,5 +40,3 @@ _A Simple Query API Fetcher Tool_
 
 # 🎥 Watch the Video: FoundRelics - A Simple Query API Fetcher Tool
 [![FoundRelics - A Simple Query API Fetcher Tool](https://img.youtube.com/vi/7pXumxXoP04/maxresdefault.jpg)](https://www.youtube.com/watch?v=7pXumxXoP04)
-
-![alt text](https://i.ibb.co/C5ZpZLVC/Lost-Relics-3-8-2025-10-17-56-AM-removebg-preview-1.png)

@@ -292,7 +292,8 @@ class FullScreenOverlay(QMainWindow):
                     self.last_gold_coins = gold_coins
                 elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins):
                     # A new run is confirmed; increment run count.
-                    self.run_count += 1
+                    if gold_coins is not None:
+                        self.run_count += 1
                     self.last_progress = new_progress
                     self.last_gold_coins = gold_coins
                     

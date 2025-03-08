@@ -44,7 +44,7 @@ class ItemTrackerPanel(QFrame):
         self.setStyleSheet(f"""
             QFrame#ItemSelectorPanel {{
                 background-color: #0F0F0F;
-                border: 2px solid #007FFF;
+                border: 2px solid #002244;
                 border-radius: 4px;
             }}
             QLabel {{

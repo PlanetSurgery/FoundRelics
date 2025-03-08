@@ -313,13 +313,13 @@ class FullScreenOverlay(QMainWindow):
             if new_progress is not None:
                 change = False
                 changed = new_progress - self.last_progress
-                if changed <= 500 and changed > 0:
+                if 0 < changed <= 500:
                     change = True
                 if self.last_progress is None:
                     # First fetch: initialize without incrementing run count.
                     self.last_progress = new_progress
                     self.last_gold_coins = gold_coins
-                elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins) and (changed is False or (changed is True and gold_coins is not None):
+                elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins) and (change is False or (change is True and gold_coins is not None)):
                     # A new run is confirmed; increment run count.
                     if gold_coins is not None:
                         self.run_count += 1
@@ -353,12 +353,13 @@ class FullScreenOverlay(QMainWindow):
                             market_value = float(item.get("MarketValue", 0))
                         except (ValueError, TypeError):
                             market_value = 0
-                        if item.get("Name", None) != "Enjin Gem" and item.get("Name", None) != "Waygate Orb" and item.get("Name", None) != "Gold Coins":
+                        if item.get("Name", None) not in ["Enjin Gem", "Waygate Orb", "Gold Coins"]:
                             amount = item.get("Amount", 1)
                             if item.get("IsBlockchain", False):
                                 market_enj_total += market_value * amount
                             else:
                                 market_gold_total += market_value * amount
+
 
                     # Add the new values to the cumulative totals.
                     self.market_gold += market_gold_total

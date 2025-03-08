@@ -55,6 +55,15 @@ class DevUIPanel(QFrame):
         self.run_time_label = QLabel("Run Time: 0")
         content_layout.addWidget(self.run_time_label)
 
+        self.gold_rate_label = QLabel("Earned Gold Per Minute: 0")
+        content_layout.addWidget(self.gold_rate_label)
+
+        self.market_gold_label = QLabel("Earned Market Gold: 0")
+        content_layout.addWidget(self.market_gold_label)
+
+        self.market_enj_label = QLabel("Earned Market ENJ: 0")
+        content_layout.addWidget(self.market_enj_label)
+
         self.fav_map = QLabel("Favorite Map: N/A")
         content_layout.addWidget(self.fav_map)
 

@@ -113,6 +113,7 @@ class FullScreenOverlay(QMainWindow):
     def __init__(self):
         super().__init__()
         self.change = False
+        self.skip = True
 
         # Frameless full-screen with transparency.
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
@@ -276,6 +277,9 @@ class FullScreenOverlay(QMainWindow):
         self.thread.start()
 
     def handle_data(self, data):
+        if self.skip:
+            self.skip = False
+            return
         if data:
             self.dev_panel.log_message("We have grabbed data.")
             self.dev_panel.set_player_name(data.get("PlayerName", ""))

@@ -106,13 +106,25 @@ class DevUIPanel(QFrame):
         self.player_name_label.setText(f"Player Name: {name}")
 
     def set_player_level(self, level):
-        self.player_level_label.setText(f"Player Level Progress: {level}")
+        self.player_level_label.setText(f"Level Progress: {level}")
 
     def set_run_count(self, count):
         self.run_count_label.setText(f"Run Count: {count}")
 
     def set_run_time(self, time_taken):
         self.run_time_label.setText(f"Run Time: {time_taken}")
+
+    def set_gold_rate(self, gold_found):
+        #do math to check rate
+        self.gold_rate_label.setText(f"Earned Gold Per Minute: {gold_found}")
+
+    def set_market_gold(self, market_gold):
+        #add to original count
+        self.market_gold_label.setText(f"Earned Market Gold: {market_gold}")
+
+    def set_market_enj(self, market_enj):
+        #add to original count
+        self.market_enj_label.setText(f"Earned Market ENJ: {market_enj}")
 
     def set_fav_map(self, map_name):
         self.fav_map.setText(f"Favorite Map: {map_name}")

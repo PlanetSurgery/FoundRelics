@@ -8,7 +8,8 @@ _A Simple Query API Fetcher Tool_
 ![alt text](https://i.ibb.co/C5ZpZLVC/Lost-Relics-3-8-2025-10-17-56-AM-removebg-preview-1.png)
 
 ### Setup Instructions
-   *Tip: This tool is still a WIP, so you may run into issues during setup and use. 
+   *Tip: This currently uses Python310. Edit setup and run batch files to change (I'll add a version check later.)
+    This tool is still a WIP, so you may run into issues during setup and use. 
     This is not fully tested. Some items do not work. 
     Playing TD or DN after fighting boss will bug out item & run counts at this moment; please play an adventure map in between.
     Run Time and the "Earned" labels are being worked on.

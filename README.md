@@ -10,7 +10,7 @@ _A Simple Query API Fetcher Tool_
 ### Setup Instructions
    *Tip: This tool is still a WIP, so you may run into issues during setup and use. 
     This is not fully tested. Some items do not work. 
-    Playing TD or DN after fighting boss will bug out item & run counts at this moment. Please play an adventure map in between.
+    Playing TD or DN after fighting boss will bug out item & run counts at this moment; please play an adventure map in between.
     Run Time and the "Earned" labels are being worked on.
     This app runs on two threads.
     Untradable items currently add to market values -- communicating with dev to change.*

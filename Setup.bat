@@ -9,7 +9,7 @@ if errorlevel 1 (
         echo Found Python at %PYTHON_DEFAULT_PATH%.
         echo Adding it to your user PATH...
         REM Append the default path to the current PATH and set it permanently.
-        setx PATH "%PATH%;%PYTHON_DEFAULT_PATH%"
+        setx /M PATH "%PATH%;%PYTHON_DEFAULT_PATH%"
         echo The PATH has been updated. Please restart your command prompt to use Python.
     ) else (
         echo Could not find Python at the default location.

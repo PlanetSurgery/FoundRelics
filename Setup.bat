@@ -8,7 +8,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Define a default installation path; change this if needed.
-set "PYTHON_DEFAULT_PATH=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python39"
+set "PYTHON_DEFAULT_PATH=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python310"
 set "PYTHON_EXE="
 
 REM Check if Python is available in the environment PATH.

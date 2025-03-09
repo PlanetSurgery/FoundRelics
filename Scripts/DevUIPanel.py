@@ -43,10 +43,10 @@ class DevUIPanel(QFrame):
         layout.addWidget(content, 1)
 
         # Dev UI elements
-        self.player_name_label = QLabel("Player Name: ")
+        self.player_name_label = QLabel("Player: ")
         content_layout.addWidget(self.player_name_label)
 
-        self.player_level_label = QLabel("Player Level Progress: ")
+        self.player_level_label = QLabel("Level Progress: ")
         content_layout.addWidget(self.player_level_label)
 
         self.run_count_label = QLabel("Run Count: 0")

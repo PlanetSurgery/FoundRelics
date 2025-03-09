@@ -364,9 +364,9 @@ class FullScreenOverlay(QMainWindow):
                         if item.get("Name", None) not in ["Enjin Gem", "Waygate Orb", "Gold Coins"]:
                             amount = item.get("Amount", 1)
                             if item.get("IsBlockchain", False):
-                                market_enj_total += market_value * amount
+                                market_enj_total += round((market_value * amount) / 100, 2)
                             else:
-                                market_gold_total += round((market_value * amount) / 100, 2)
+                                market_gold_total += market_value * amount
 
                     # Add the new values to the cumulative totals.
                     self.market_gold += market_gold_total

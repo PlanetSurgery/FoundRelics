@@ -103,7 +103,7 @@ class DevUIPanel(QFrame):
 
     # Convenient setters/getters
     def set_player_name(self, name):
-        self.player_name_label.setText(f"Player Name: {name}")
+        self.player_name_label.setText(f"Player: {name}")
 
     def set_player_level(self, level):
         self.player_level_label.setText(f"Level Progress: {level}")

@@ -279,8 +279,10 @@ class FullScreenOverlay(QMainWindow):
     def handle_data(self, data):
         if data:
             self.dev_panel.log_message("We have grabbed data.")
-            self.dev_panel.set_player_name(data.get("PlayerName", ""))
-            
+            echelon = data.get("PlayerLevel")
+            player_name = data.get("PlayerName", "")
+            self.dev_panel.set_player_name(f"{player_name} || Echelon {echelon}")
+                        
             # Extract current XP and max XP, ensuring they are integers
             try:
                 current_xp = int(data.get("PlayerLevelProgress", 0))

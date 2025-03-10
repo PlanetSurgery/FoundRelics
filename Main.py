@@ -388,7 +388,7 @@ class FullScreenOverlay(QMainWindow):
                         if matching_item:
                             try:
                                 count = 0
-                                if base_name == "Enjin Gem" or base_name == "Flame Crystal":
+                                if base_name == "Enjin Gem" or base_name == "Flame Crystal" or base_name == "Golden Grind Chest":
                                     if base_name == "Enjin Gem":
                                         count = round(matching_item.get("Amount", 1) / 100, 2)
                                     else:

@@ -28,6 +28,8 @@ _A Simple Query API Fetcher Tool_
 4. **Adding New Items:**  
    When providing new items, ensure that the file name exactly matches its name in the JSON data.
 
+#. Panels are draggable by clicking & holding panel title bar.
+
    ============
 
 ### Tested Items (In Communication w/ Dev Team to Fix)

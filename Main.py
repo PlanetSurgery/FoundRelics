@@ -123,7 +123,7 @@ class FullScreenOverlay(QMainWindow):
         self.selected_items = []  # references from item tracker
 
         # Shared variable: total number of items (default 13)
-        self.num_items = 15
+        self.num_items = 13
         self.run_count = 0
         self.run_time_total = 0
         self.market_gold = 0

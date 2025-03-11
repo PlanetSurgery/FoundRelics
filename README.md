@@ -9,9 +9,10 @@ _A Simple Query API Fetcher Tool_
 
 ### Setup Instructions
    *Tip: This currently uses Python310. Edit setup and run batch files to change (I'll add a version check later.)
-    This tool is still a WIP, so you may run into issues during setup and use. 
+    Panels are draggable by clicking & holding panel title bar.
+    This tool is still a WIP, so you may run into issues during use.
     This is not fully tested. Some items do not work. 
-    Playing TD or DN after fighting boss will bug out item & run counts at this moment; please play an adventure map in between.
+    Playing TD, DN, or Siege after fighting boss will bug out item & run counts at this moment; please play an adventure map in between.
     Run Time and the "Earned" labels are being worked on.
     This app runs on two threads.
     Untradable items currently add to market values -- communicating with dev to change.*
@@ -27,8 +28,6 @@ _A Simple Query API Fetcher Tool_
 
 4. **Adding New Items:**  
    When providing new items, ensure that the file name exactly matches its name in the JSON data.
-
-#. Panels are draggable by clicking & holding panel title bar.
 
    ============
 

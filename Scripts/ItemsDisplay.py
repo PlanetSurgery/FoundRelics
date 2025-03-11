@@ -60,7 +60,7 @@ class ItemsDisplay(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         padding = 20
-        natural_box_size = 100  
+        natural_box_size = 75
         max_scale = 0.67
         
         total_natural_width = self.num_items * natural_box_size + (self.num_items - 1) * padding

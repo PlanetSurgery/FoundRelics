@@ -262,18 +262,23 @@ class FullScreenOverlay(QMainWindow):
         self.dev_panel.log_message("Fetching data...")
 
     def update_player_data(self):
-        # Start the data fetching in a separate thread.
         self.dev_panel.log_message("Fetching data in background...")
         self.thread = QThread()
         self.worker = DataFetcher()
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.fetch)
+
+        # Connect success and error signals to their respective handlers.
         self.worker.data_fetched.connect(self.handle_data)
         self.worker.error.connect(self.handle_error)
-        # Clean up the thread once done.
+
+        # Ensure the thread quits and cleans up even if an error occurs.
         self.worker.data_fetched.connect(self.thread.quit)
+        self.worker.error.connect(self.thread.quit)
         self.worker.data_fetched.connect(self.worker.deleteLater)
+        self.worker.error.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
+
         self.thread.start()
 
     def handle_data(self, data):

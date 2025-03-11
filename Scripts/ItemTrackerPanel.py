@@ -1,3 +1,6 @@
+# Scripts/ItemTrackerPanel.py
+# Created by PlanetSurgery
+
 import os
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel, QGridLayout
 from PyQt5.QtCore import Qt

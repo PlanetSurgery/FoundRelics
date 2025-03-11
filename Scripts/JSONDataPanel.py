@@ -1,4 +1,6 @@
 # Scripts/JSONDataPanel.py
+# Created by PlanetSurgery
+
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel
 from PyQt5.QtCore import Qt
 from .Buttons import SCROLLBAR_STYLES, create_title_bar

@@ -1,3 +1,6 @@
+# Scripts/ItemsDisplay.py
+# Created by PlanetSurgery
+
 from PyQt5.QtWidgets import QWidget, QSizePolicy
 from PyQt5.QtGui import QPainter, QPen, QPixmap, QColor, QFont
 from PyQt5.QtCore import Qt, QRect, QTimer

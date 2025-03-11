@@ -1,3 +1,6 @@
+# Scripts/Buttons.py
+# Created by PlanetSurgery
+
 from PyQt5.QtGui import QPainter, QPen, QColor, QPalette
 from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QWidget, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout

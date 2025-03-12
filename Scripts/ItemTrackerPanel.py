@@ -125,7 +125,7 @@ class ItemTrackerPanel(QFrame):
 
         if self.items_display:
             selected_pixmaps = [w.original_pixmap for w in self.selected_items]
-            selected_paths = [w.file_path for w in self.selected_items]  # update file paths
+            selected_paths = [w.file_path for w in self.selected_items] 
             self.items_display.update_icons(selected_pixmaps, selected_paths)
 
     def highlight_defaults(self, default_paths):

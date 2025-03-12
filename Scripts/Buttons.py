@@ -48,7 +48,7 @@ def create_title_bar(title_text):
     layout.addStretch()
 
     btn_close = QPushButton("X")
-    btn_close.setEnabled(False)  # grayed out for now
+    btn_close.setEnabled(False)
     btn_close.setStyleSheet("""
         QPushButton {
             color: #0F0F0F;
@@ -83,13 +83,10 @@ def draw_control_buttons(painter, widget_width, widget_height, show_blue_box, co
     green_y = red_y
     painter.fillRect(green_x, green_y, button_size, button_size, QColor(0, 255, 0))
 
-    orange_rect = QRect(green_x, green_y + button_size + control_padding,
-                        button_size, button_size)
+    orange_rect = QRect(green_x, green_y + button_size + control_padding, button_size, button_size)
     painter.fillRect(orange_rect, QColor(255, 165, 0))
 
-    cyan_rect = QRect(green_x - button_size - control_padding,
-                      green_y + button_size + control_padding,
-                      button_size, button_size)
+    cyan_rect = QRect(green_x - button_size - control_padding, green_y + button_size + control_padding, button_size, button_size)
     painter.fillRect(cyan_rect, QColor(0, 255, 255))
 
     return {
@@ -100,9 +97,7 @@ def draw_control_buttons(painter, widget_width, widget_height, show_blue_box, co
         "cyan_rect": cyan_rect
     }
 
-def handle_control_buttons_click(event, rects,
-                                 show_blue_box, show_individual_buttons,
-                                 on_exit, on_reset, on_increment, on_decrement):
+def handle_control_buttons_click(event, rects, show_blue_box, show_individual_buttons, on_exit, on_reset, on_increment, on_decrement):
     pos = event.pos()
 
     if rects["red_rect"].contains(pos):
@@ -120,7 +115,6 @@ def handle_control_buttons_click(event, rects,
         on_increment()
         return show_blue_box, show_individual_buttons
 
-    # No change
     return show_blue_box, show_individual_buttons
 
 class MainPanelButtons(QWidget):
@@ -140,7 +134,6 @@ class MainPanelButtons(QWidget):
         bottom_button_width = 70
         bottom_button_height = 30
 
-        # Create top row buttons.
         self.plus_button = QPushButton("+")
         self.minus_button = QPushButton("–")
         self.toggle_button = QPushButton("!")

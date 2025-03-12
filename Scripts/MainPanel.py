@@ -79,7 +79,7 @@ class MainPanel(QFrame):
             border-radius: 4px;
         """)
         self.json_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        self.json_button.setEnabled(False)  # enabled once data is fetched
+        self.json_button.setEnabled(False) 
         btn_row.addWidget(self.json_button, alignment=Qt.AlignLeft)
 
         self.item_selector_button = QPushButton("Show Tracked Items")

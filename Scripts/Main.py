@@ -21,7 +21,6 @@ class FullScreenOverlay(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        # Class Vars
         self.change = False
         self.skip = True
         self.selected_items = []
@@ -34,25 +33,20 @@ class FullScreenOverlay(QMainWindow):
         self.last_progress = 0
         self.last_gold_coins = 0
 
-        # Variables for dragging the panel
         self.dragging = False
         self.drag_offset = QPoint(0, 0)
 
-        # Window Setup
         self.setWindowTitle("FoundRelics")
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.showFullScreen()
         self.setup_widgets()
 
-        # Setup Timers
         self.setup_timers()
 
-        # Connect DevUIPanel buttons.
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)
         self.dev_panel.item_selector_button.clicked.connect(self.toggle_item_selector_panel)
 
-        # Update Display
         self.all_icons = self.load_all_icons()
         self.item_selector_panel.populate_items(self.all_icons)
         self.item_selector_panel.set_items_display(self.items_display)
@@ -82,7 +76,6 @@ class FullScreenOverlay(QMainWindow):
             response = requests.get(url)
             if response.status_code == 200:
                 readme_text = response.text
-                # Check for App Version
                 version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
                 if version_match:
                     version = version_match.group(1).strip()
@@ -97,7 +90,6 @@ class FullScreenOverlay(QMainWindow):
                     self.dev_panel.log_message(message)
                     print(message)
                 
-                # Check for Notice
                 notice_match = re.search(r'Notice:\s*(.*)', readme_text)
                 if notice_match:
                     notice_text = notice_match.group(1).strip()

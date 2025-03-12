@@ -1,4 +1,4 @@
-# Main.py
+# Scripts/Main.py
 # Created by PlanetSurgery
 
 import sys, os, json, requests, re
@@ -11,6 +11,7 @@ from PyQt5.QtGui import QCursor, QIcon
 
 from Buttons import MainPanelButtons
 from DataFetcher import DataFetcher
+from DonatePanel import DonatePanel
 from MainPanel import MainPanel
 from MainParent import MainParent
 from ItemsDisplay import ItemsDisplay
@@ -79,7 +80,7 @@ class FullScreenOverlay(QMainWindow):
                 version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
                 if version_match:
                     version = version_match.group(1).strip()
-                    if version != "0.01_04":
+                    if version != "0.01_05":
                         message = "2 Minute Log:: Project has been updated to version " + version + ". Update for latest changes!"
                         self.dev_panel.log_message(message)
                         print(message)
@@ -134,14 +135,17 @@ class FullScreenOverlay(QMainWindow):
         self.dev_panel = MainPanel()
         self.json_panel = JSONDataPanel()
         self.item_selector_panel = ItemTrackerPanel()
+        self.donate_panel = DonatePanel()
         self.side_panel_container = MainParent(left_container_inner, central_widget)
         
         self.json_panel.setVisible(False)
         self.item_selector_panel.setVisible(False)
+        self.donate_panel.setVisible(False)
         
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
         self.json_panel.setFixedSize(common_panel_width, 400)
         self.item_selector_panel.setFixedSize(common_panel_width, 400)
+        self.donate_panel.setFixedSize(common_panel_width, 400)
         
         self.side_panel_container.setGeometry(20, 20, self.width() - 40, self.height() - 40)
         self.side_panel_container.installEventFilter(self)
@@ -155,13 +159,15 @@ class FullScreenOverlay(QMainWindow):
             on_increment=self.increment_items,
             on_decrement=self.decrement_items,
             on_toggle=self.toggle_item_buttons,
-            on_reset=self.reset_items
+            on_reset=self.reset_items,
+            on_donate=self.on_donate
         )
         
         dev_layout.addWidget(self.main_panel_buttons)
         left_layout.addWidget(self.dev_panel)
         left_layout.addWidget(self.json_panel)
         left_layout.addWidget(self.item_selector_panel)
+        left_layout.addWidget(self.donate_panel)
         left_layout.addStretch()
         
         self.items_display.raise_()
@@ -387,6 +393,13 @@ class FullScreenOverlay(QMainWindow):
             self.items_display.update_icons(selected_pixmaps, self.items_display.current_icon_paths)
         else:
             self.dev_panel.item_selector_button.setText("Show Tracked Items")
+    
+    def on_donate(self):
+        is_visible = not self.donate_panel.isVisible()
+        self.donate_panel.setVisible(is_visible)
+        if is_visible:
+            self.json_panel.setVisible(False)
+            self.item_selector_panel.setVisible(False)
     
 def change_console_icon(icon_path):
     WM_SETICON = 0x80

@@ -218,7 +218,7 @@ class FullScreenOverlay(QMainWindow):
     def load_all_icons(self):
         from PyQt5.QtGui import QPixmap
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        icons_folder = os.path.join(base_dir, "Icons")
+        icons_folder = os.path.join(base_dir, "..", "Icons")
         all_items = []
         for root, dirs, files in os.walk(icons_folder):
             for file in files:

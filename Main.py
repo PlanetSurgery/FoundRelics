@@ -83,11 +83,11 @@ class FullScreenOverlay(QMainWindow):
                 if match:
                     version = match.group(1).strip()
                     if version != "0.01_02":
-                        message = "Project has been updated to version: " + version + ". Update for latest changes!"
+                        message = "2 Minute Log: Project has been updated to version " + version + ". Update for latest changes!"
                         self.dev_panel.log_message(message)
                         print(message) 
                     else:
-                        print("You are up to date. Enjoy!")
+                        print("2 Minute Log: Your version is up to date. No notice at this time.")
                 else:
                     message = "No Version Found"
                     self.dev_panel.log_message(message)

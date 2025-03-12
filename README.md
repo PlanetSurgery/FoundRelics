@@ -62,4 +62,4 @@ _A Simple Query API Fetcher Tool_
 
 App Version: 0.01_05
 ---
-Notice: No notice at this time.
+Notice: Please hit me up on discord if you have any suggestions!

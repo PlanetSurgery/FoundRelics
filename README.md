@@ -1,7 +1,7 @@
 # 💻 FoundRelics  
 _A Simple Query API Fetcher Tool_
 
-> **Note:** Must have a membership to use. Please purchase a membership to continue.
+> **Notes:** Must have activated an orb to use; please purchase one to continue. Also note, panels is draggable -- Item display will be movable as well in a future update.
 
 ---
 

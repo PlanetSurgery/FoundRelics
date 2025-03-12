@@ -6,10 +6,10 @@ import sys, os, json, requests
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QSizePolicy
 from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot, QObject
 
-from .Buttons import MainPanelButtons 
-from .ItemsDisplay import ItemsDisplay
-from .ItemTrackerPanel import ItemTrackerPanel
-from .JSONDataPanel import JSONDataPanel
+from Buttons import MainPanelButtons 
+from ItemsDisplay import ItemsDisplay
+from ItemTrackerPanel import ItemTrackerPanel
+from JSONDataPanel import JSONDataPanel
 
 class MainParent(QWidget):
     def __init__(self, panels_widget, parent=None):

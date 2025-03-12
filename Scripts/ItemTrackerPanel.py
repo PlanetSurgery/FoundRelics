@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel, Q
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QColor
 
-from .Buttons import SCROLLBAR_STYLES, create_title_bar
+from Buttons import SCROLLBAR_STYLES, create_title_bar
 
 class SelectableIcon(QLabel):
     def __init__(self, pixmap, file_path, toggle_callback, thumb_size=64, parent=None):

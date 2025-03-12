@@ -4,7 +4,7 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel
 from PyQt5.QtCore import Qt
 
-from .Buttons import SCROLLBAR_STYLES, create_title_bar
+from Buttons import SCROLLBAR_STYLES, create_title_bar
 
 class JSONDataPanel(QFrame):
     def __init__(self, parent=None):

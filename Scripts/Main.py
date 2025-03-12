@@ -86,7 +86,7 @@ class FullScreenOverlay(QMainWindow):
                 version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
                 if version_match:
                     version = version_match.group(1).strip()
-                    if version != "0.01_03":
+                    if version != "0.01_04":
                         message = "2 Minute Log:: Project has been updated to version " + version + ". Update for latest changes!"
                         self.dev_panel.log_message(message)
                         print(message)

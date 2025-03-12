@@ -76,7 +76,6 @@ class FullScreenOverlay(QMainWindow):
         self.pos_timer.start(16)
         
     def setup_widgets(self):
-        # Central Container
         central_widget = QWidget(self)
         central_widget.setObjectName("central_widget")
         central_widget.setStyleSheet("#central_widget { background: transparent; }")
@@ -84,12 +83,9 @@ class FullScreenOverlay(QMainWindow):
         
         self.items_display = ItemsDisplay(central_widget, num_items=self.num_items)
         self.items_display.setGeometry(370, 20, 1200, 600)
-        self.items_display.raise_()
-
-        # Left Panel Container
+        
         common_panel_width = 300
         common_panel_height = 420
-   
         left_container_inner = QWidget()
         left_container_inner.setFixedSize(330, 960)
         
@@ -129,6 +125,9 @@ class FullScreenOverlay(QMainWindow):
         left_layout.addWidget(self.json_panel)
         left_layout.addWidget(self.item_selector_panel)
         left_layout.addStretch()
+        
+        self.items_display.raise_()
+
 
     def eventFilter(self, obj, event):
         if obj == self.side_panel_container:

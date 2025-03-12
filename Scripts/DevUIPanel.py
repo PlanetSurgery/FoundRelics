@@ -6,6 +6,10 @@ from PyQt5.QtCore import Qt
 from .Buttons import SCROLLBAR_STYLES, create_title_bar
 
 class MainPanel(QFrame):
+    """
+    The Dev UI panel that shows player info, run count, a log field,
+    and two buttons for toggling JSON panel and item tracker panel.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("DevPanel")
@@ -24,13 +28,16 @@ class MainPanel(QFrame):
             }}
         """ + SCROLLBAR_STYLES)
         
+        # Do not set fixed height here – Main.py will do that
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
+        # Title bar
         title = create_title_bar("FoundRelics")
         layout.addWidget(title)
 
+        # Main content area
         content = QWidget()
         content.setStyleSheet("background-color: #1A1A1A;")
         content_layout = QVBoxLayout(content)
@@ -38,6 +45,7 @@ class MainPanel(QFrame):
         content_layout.setSpacing(8)
         layout.addWidget(content, 1)
 
+        # Dev UI elements
         self.player_name_label = QLabel("Player: ")
         content_layout.addWidget(self.player_name_label)
 
@@ -96,6 +104,7 @@ class MainPanel(QFrame):
         btn_row.addStretch()
         content_layout.addLayout(btn_row)
 
+    # Convenient setters/getters
     def set_player_name(self, name):
         self.player_name_label.setText(f"Player: {name}")
 
@@ -109,12 +118,15 @@ class MainPanel(QFrame):
         self.run_time_label.setText(f"Run Time: {time_taken}")
 
     def set_gold_rate(self, gold_found):
+        #do math to check rate
         self.gold_rate_label.setText(f"Earned Gold Per Minute: {gold_found}")
 
     def set_market_gold(self, market_gold):
+        #add to original count
         self.market_gold_label.setText(f"Earned Market Gold: {market_gold}")
 
     def set_market_enj(self, market_enj):
+        #add to original count
         self.market_enj_label.setText(f"Earned Market ENJ: {market_enj}")
 
     def set_fav_map(self, map_name):

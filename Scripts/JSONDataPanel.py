@@ -3,12 +3,10 @@
 
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel
 from PyQt5.QtCore import Qt
+
 from .Buttons import SCROLLBAR_STYLES, create_title_bar
 
 class JSONDataPanel(QFrame):
-    """
-    Panel that displays JSON data in a scrollable label.
-    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("JSONPanel")
@@ -23,16 +21,13 @@ class JSONDataPanel(QFrame):
             }}
         """ + SCROLLBAR_STYLES)
         
-        # Do not set a fixed height here – Main.py will assign the proper size
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # Title bar
         title = create_title_bar("JSON Data")
         layout.addWidget(title)
 
-        # Main content area
         content = QWidget()
         content.setStyleSheet("background-color: #1A1A1A;")
         content_layout = QVBoxLayout(content)

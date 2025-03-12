@@ -2,15 +2,14 @@
 # Created by PlanetSurgery
 
 import os
+
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel, QGridLayout
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QColor
-from Scripts.Buttons import SCROLLBAR_STYLES, create_title_bar
+
+from .Buttons import SCROLLBAR_STYLES, create_title_bar
 
 class SelectableIcon(QLabel):
-    """
-    A clickable icon that toggles a white overlay when selected.
-    """
     def __init__(self, pixmap, file_path, toggle_callback, thumb_size=64, parent=None):
         super().__init__(parent)
         self.thumb_size = thumb_size
@@ -37,10 +36,6 @@ class SelectableIcon(QLabel):
             painter.drawRect(self.rect())
 
 class ItemTrackerPanel(QFrame):
-    """
-    A panel where the user can select up to a number of items based on ItemsDisplay.
-    Immediately updates the ItemsDisplay each time selection changes.
-    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("ItemSelectorPanel")
@@ -55,8 +50,8 @@ class ItemTrackerPanel(QFrame):
             }}
         """ + SCROLLBAR_STYLES)
         
-        self.selected_items = []  # list of SelectableIcon
-        self.items_display = None  # Reference to ItemsDisplay
+        self.selected_items = [] 
+        self.items_display = None
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -113,7 +108,6 @@ class ItemTrackerPanel(QFrame):
                 row += 1
 
     def on_icon_toggled(self, icon_widget):
-        # Use the current item count from ItemsDisplay (default to 10 if not set)
         max_items = self.items_display.num_items if self.items_display else 10
 
         if icon_widget.selected:

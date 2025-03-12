@@ -16,12 +16,10 @@ class MainParent(QWidget):
         super().__init__(parent)
         self.is_collapsed = False
 
-        # Initiate Main Layout
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # Title Bar
         title_bar = QWidget()
         title_bar.setStyleSheet("background-color: #222222;")
         title_bar.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
@@ -34,7 +32,6 @@ class MainParent(QWidget):
         lbl_title.setStyleSheet("color: white; font-size: 18px; font-weight: bold;")
         title_layout.addWidget(lbl_title, alignment=Qt.AlignLeft)
 
-        # Button container.
         btn_container = QWidget()
         btn_layout = QHBoxLayout(btn_container)
         btn_layout.setContentsMargins(0, 0, 0, 0)
@@ -74,7 +71,6 @@ class MainParent(QWidget):
         title_layout.addWidget(btn_container, alignment=Qt.AlignRight)
         main_layout.addWidget(title_bar, alignment=Qt.AlignLeft)
 
-        # QStackedWidget for the panels.
         self.stack = QStackedWidget()
         self.stack.addWidget(panels_widget)
         dummy_placeholder = QWidget()

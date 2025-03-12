@@ -44,7 +44,6 @@ class FullScreenOverlay(QMainWindow):
 
         # Setup Timers
         self.setup_timers()
-        self.setup_github_update_timer()
 
         # Connect DevUIPanel buttons.
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)

@@ -52,4 +52,5 @@ _A Simple Query API Fetcher Tool_
 [![FoundRelics - Loot Tracker Tool](https://img.youtube.com/vi/7pXumxXoP04/maxresdefault.jpg)](https://www.youtube.com/watch?v=7pXumxXoP04)
 
 App Version: 0.01_02
+---
 Notice: No notice at this time.

@@ -88,7 +88,7 @@ class FullScreenOverlay(QMainWindow):
                         self.dev_panel.log_message(message)
                         print(message)
                     else:
-                        print("2 Minute Log:: Your version is up to date. No notice at this time.")
+                        print("2 Minute Log:: Your version is up to date.")
                 else:
                     message = "No Version Found"
                     self.dev_panel.log_message(message)

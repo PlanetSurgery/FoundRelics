@@ -70,7 +70,7 @@ class FullScreenOverlay(QMainWindow):
         
         self.github_timer = QTimer(self)
         self.github_timer.timeout.connect(self.check_github_update)
-        self.github_timer.start(60000)
+        self.github_timer.start(120000)
         self.check_github_update()
         
     def check_github_update(self):
@@ -79,19 +79,29 @@ class FullScreenOverlay(QMainWindow):
             response = requests.get(url)
             if response.status_code == 200:
                 readme_text = response.text
-                match = re.search(r'App Version:\s*([^\s]+)', readme_text)
-                if match:
-                    version = match.group(1).strip()
-                    if version != "0.01_02":
+                # Check for App Version
+                version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
+                if version_match:
+                    version = version_match.group(1).strip()
+                    if version != "0.01_03":
                         message = "2 Minute Log: Project has been updated to version " + version + ". Update for latest changes!"
                         self.dev_panel.log_message(message)
-                        print(message) 
+                        print(message)
                     else:
                         print("2 Minute Log: Your version is up to date. No notice at this time.")
                 else:
                     message = "No Version Found"
                     self.dev_panel.log_message(message)
                     print(message)
+                
+                # Check for Notice
+                notice_match = re.search(r'Notice:\s*(.*)', readme_text)
+                if notice_match:
+                    notice_text = notice_match.group(1).strip()
+                    if notice_text:
+                        notice_message = "2 Minute Log: Notice: " + notice_text
+                        self.dev_panel.log_message(notice_message)
+                        print(notice_message)
             else:
                 message = "Failed to fetch GitHub README. HTTP status code: " + str(response.status_code)
                 self.dev_panel.log_message(message)

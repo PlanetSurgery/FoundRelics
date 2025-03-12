@@ -3,9 +3,11 @@
 
 import sys, os, json, requests, re
 
+import ctypes
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QSizePolicy
 from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot, QObject, QEvent, QPoint
-from PyQt5.QtGui import QCursor
+from PyQt5.QtGui import QCursor, QIcon
 
 from Scripts.Buttons import MainPanelButtons
 from Scripts.DataFetcher import DataFetcher
@@ -37,6 +39,7 @@ class FullScreenOverlay(QMainWindow):
         self.drag_offset = QPoint(0, 0)
 
         # Window Setup
+        self.setWindowTitle("FoundRelics")
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.showFullScreen()
@@ -392,9 +395,28 @@ class FullScreenOverlay(QMainWindow):
             self.items_display.update_icons(selected_pixmaps, self.items_display.current_icon_paths)
         else:
             self.dev_panel.item_selector_button.setText("Show Tracked Items")
+    
+def change_console_icon(icon_path):
+    WM_SETICON = 0x80
+    ICON_SMALL = 0
+    ICON_BIG = 1
+
+    hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+    if hwnd:
+        hicon = ctypes.windll.user32.LoadImageW(0, icon_path, 1, 32, 32, 0x00000010)
+        if hicon == 0:
+            print("Failed to load icon from:", icon_path)
+            return
+        ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, ICON_SMALL, hicon)
+        ctypes.windll.user32.SendMessageW(hwnd, WM_SETICON, ICON_BIG, hicon)
+    else:
+        print("No console window found.")
 
 if __name__ == "__main__":
+    icon_path = os.path.abspath("icon.ico")
+    change_console_icon(icon_path)
     app = QApplication(sys.argv)
     window = FullScreenOverlay()
+    window.setWindowIcon(QIcon("icon.ico"))
     window.show()
     sys.exit(app.exec_())

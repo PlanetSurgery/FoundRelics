@@ -374,6 +374,7 @@ class FullScreenOverlay(QMainWindow):
         self.json_panel.setVisible(is_visible)
         if is_visible:
             self.item_selector_panel.setVisible(False)
+            self.donate_panel.setVisible(False)
             self.dev_panel.json_button.setText("Hide JSON Data")
             self.dev_panel.item_selector_button.setText("Show Tracked Items")
         else:
@@ -384,6 +385,7 @@ class FullScreenOverlay(QMainWindow):
         self.item_selector_panel.setVisible(is_visible)
         if is_visible:
             self.json_panel.setVisible(False)
+            self.donate_panel.setVisible(False)
             self.dev_panel.item_selector_button.setText("Hide Tracked Items")
             self.dev_panel.json_button.setText("Show JSON Data")
             if not self.item_selector_panel.selected_items:

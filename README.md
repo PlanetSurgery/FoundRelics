@@ -1,5 +1,5 @@
 # 💻 FoundRelics  
-_A Simple Query API Fetcher Tool_
+_A Simple Query API Fetcher Tool || Version 0.01_
 
 > **Note:** Must have a membership to use. Please purchase a membership to continue.
 

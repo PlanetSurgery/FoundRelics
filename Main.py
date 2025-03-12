@@ -1,7 +1,7 @@
 # Main.py
 # Created by PlanetSurgery
 
-import sys, os, json, requests
+import sys, os, json, requests, re
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QSizePolicy
 from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot, QObject, QEvent, QPoint
@@ -31,7 +31,7 @@ class FullScreenOverlay(QMainWindow):
         self.map_counts = {}
         self.last_progress = 0
         self.last_gold_coins = 0
-        
+
         # Variables for dragging the panel
         self.dragging = False
         self.drag_offset = QPoint(0, 0)
@@ -44,6 +44,7 @@ class FullScreenOverlay(QMainWindow):
 
         # Setup Timers
         self.setup_timers()
+        self.setup_github_update_timer()
 
         # Connect DevUIPanel buttons.
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)
@@ -53,13 +54,6 @@ class FullScreenOverlay(QMainWindow):
         self.all_icons = self.load_all_icons()
         self.item_selector_panel.populate_items(self.all_icons)
         self.item_selector_panel.set_items_display(self.items_display)
-        
-    def update_positions(self):
-        if self.dragging:
-            global_pos = QCursor.pos()
-            parent_pos = self.centralWidget().mapFromGlobal(global_pos)
-            new_top_left = parent_pos - self.drag_offset
-            self.side_panel_container.move(new_top_left)
         
     def setup_timers(self):
         self.fetch_timer = QTimer(self)
@@ -74,6 +68,46 @@ class FullScreenOverlay(QMainWindow):
         self.pos_timer = QTimer(self)
         self.pos_timer.timeout.connect(self.update_positions)
         self.pos_timer.start(16)
+        
+        self.github_timer = QTimer(self)
+        self.github_timer.timeout.connect(self.check_github_update)
+        self.github_timer.start(60000)
+        self.check_github_update()
+        
+    def check_github_update(self):
+        url = "https://raw.githubusercontent.com/PlanetSurgery/FoundRelics/refs/heads/main/README.md"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                readme_text = response.text
+                match = re.search(r'App Version:\s*([^\s]+)', readme_text)
+                if match:
+                    version = match.group(1).strip()
+                    if version != "0.01_02":
+                        message = "Project has been updated to version: " + version + ". Update for latest changes!"
+                        self.dev_panel.log_message(message)
+                        print(message) 
+                    else:
+                        print("You are up to date. Enjoy!")
+                else:
+                    message = "No Version Found"
+                    self.dev_panel.log_message(message)
+                    print(message)
+            else:
+                message = "Failed to fetch GitHub README. HTTP status code: " + str(response.status_code)
+                self.dev_panel.log_message(message)
+                print(message)
+        except Exception as e:
+            message = "Error fetching GitHub README: " + str(e)
+            self.dev_panel.log_message(message)
+            print(message)
+
+    def update_positions(self):
+        if self.dragging:
+            global_pos = QCursor.pos()
+            parent_pos = self.centralWidget().mapFromGlobal(global_pos)
+            new_top_left = parent_pos - self.drag_offset
+            self.side_panel_container.move(new_top_left)
         
     def setup_widgets(self):
         central_widget = QWidget(self)
@@ -127,7 +161,6 @@ class FullScreenOverlay(QMainWindow):
         left_layout.addStretch()
         
         self.items_display.raise_()
-
 
     def eventFilter(self, obj, event):
         if obj == self.side_panel_container:
@@ -188,7 +221,6 @@ class FullScreenOverlay(QMainWindow):
         return all_items
 
     def show_fetching_data(self):
-        # Add file log as well here in future.
         self.dev_panel.log_message("Fetching data...")
 
     def update_player_data(self):
@@ -304,7 +336,7 @@ class FullScreenOverlay(QMainWindow):
                         if matching_item:
                             try:
                                 count = 0
-                                if base_name == "Enjin Gem" or base_name == "Flame Crystal" or base_name == "Golden Grind Chest":
+                                if base_name in ["Enjin Gem", "Flame Crystal", "Golden Grind Chest"]:
                                     if base_name == "Enjin Gem":
                                         count = round(matching_item.get("Amount", 1) / 100, 2)
                                     else:

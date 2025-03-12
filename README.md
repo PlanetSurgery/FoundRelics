@@ -27,7 +27,7 @@ _A Simple Query API Fetcher Tool_
     Untradable items currently add to market values -- communicating with dev to change.*
 
 1. **Install Python:**  
-   Ensure you have Python v3.10 installed on your machine. If not, download it [here](https://www.python.org/downloads/). If you are using a different version, you will need to edit the Setup & Run script. This will be auto in the future.
+   Ensure you have Python v3.10 installed on your machine. If not, download it [here](https://www.python.org/downloads/release/python-3100/). If you are using a different version, you will need to edit the Setup & Run script. This will be auto in the future.
 
 2. **Initial Setup:**  
    Run the `Setup.bat` file to install any required modules.

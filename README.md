@@ -48,6 +48,7 @@ _A Simple Query API Fetcher Tool_
 
 ---
 
-App Version: 0.01-01
 # 🎥 Watch the Video (Outdated): FoundRelics - Loot Tracker Tool
 [![FoundRelics - Loot Tracker Tool](https://img.youtube.com/vi/7pXumxXoP04/maxresdefault.jpg)](https://www.youtube.com/watch?v=7pXumxXoP04)
+
+App Version: 0.01-01

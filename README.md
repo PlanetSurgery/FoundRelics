@@ -62,4 +62,4 @@ _A Simple Query API Fetcher Tool_
 
 App Version: 0.01_05
 ---
-Notice: Please hit me up on discord if you have any suggestions!
+Notice: Please do not move panels behind item display; it will be unusable afterwards. Please note that run and item count will glitch out boss runs; play an adventure after to fix or manually adjust values. One final thing, some items currently do not work due to having similar names. Most if not all of these issues will be fixed when the game updates. 

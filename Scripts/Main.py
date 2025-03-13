@@ -119,37 +119,55 @@ class FullScreenOverlay(QMainWindow):
         central_widget.setObjectName("central_widget")
         central_widget.setStyleSheet("#central_widget { background: transparent; }")
         self.setCentralWidget(central_widget)
-        
-        self.items_display = ItemsDisplay(central_widget, num_items=self.num_items)
-        self.items_display.setGeometry(370, 20, 1200, 600)
-        
-        common_panel_width = 300
-        common_panel_height = 420
-        left_container_inner = QWidget()
-        left_container_inner.setFixedSize(330, 960)
-        
-        left_layout = QVBoxLayout(left_container_inner)
-        left_layout.setContentsMargins(0, 15, 0, 15)
-        left_layout.setSpacing(15)
 
+        # Compute scaling factors based on current full-screen resolution vs. 1920x1080
+        scale_x = self.width() / 1920.0
+        scale_y = self.height() / 1080.0
+
+        # Scale the items display geometry
+        self.items_display = ItemsDisplay(central_widget, num_items=self.num_items)
+        self.items_display.setGeometry(
+            int(370 * scale_x),
+            int(20 * scale_y),
+            int(1200 * scale_x),
+            int(600 * scale_y)
+        )
+
+        # Store left container as an instance variable so we can update its size on resize
+        self.left_container_inner = QWidget()
+        self.left_container_inner.setFixedSize(
+            int(330 * scale_x),
+            int(960 * scale_y)
+        )
+
+        left_layout = QVBoxLayout(self.left_container_inner)
+        left_layout.setContentsMargins(0, int(15 * scale_y), 0, int(15 * scale_y))
+        left_layout.setSpacing(int(15 * scale_y))
+
+        # Create panels
         self.dev_panel = MainPanel()
         self.json_panel = JSONDataPanel()
         self.item_selector_panel = ItemTrackerPanel()
         self.donate_panel = DonatePanel()
-        self.side_panel_container = MainParent(left_container_inner, central_widget)
-        
+        self.side_panel_container = MainParent(self.left_container_inner, central_widget)
+
+        # Hide additional panels by default
         self.json_panel.setVisible(False)
         self.item_selector_panel.setVisible(False)
         self.donate_panel.setVisible(False)
-        
+
+        # Set panel sizes based on scaling factors
+        common_panel_width = int(300 * scale_x)
+        common_panel_height = int(420 * scale_y)
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
-        self.json_panel.setFixedSize(common_panel_width, 400)
-        self.item_selector_panel.setFixedSize(common_panel_width, 400)
-        self.donate_panel.setFixedSize(common_panel_width, 400)
-        
+        self.json_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+        self.donate_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+
         self.side_panel_container.setGeometry(20, 20, self.width() - 40, self.height() - 40)
         self.side_panel_container.installEventFilter(self)
 
+        # Add a stretch and your buttons layout to the dev_panel
         dev_layout = self.dev_panel.layout()
         if dev_layout is None:
             dev_layout = QVBoxLayout(self.dev_panel)
@@ -162,15 +180,47 @@ class FullScreenOverlay(QMainWindow):
             on_reset=self.reset_items,
             on_donate=self.on_donate
         )
-        
         dev_layout.addWidget(self.main_panel_buttons)
+
+        # Add panels to left layout
         left_layout.addWidget(self.dev_panel)
         left_layout.addWidget(self.json_panel)
         left_layout.addWidget(self.item_selector_panel)
         left_layout.addWidget(self.donate_panel)
         left_layout.addStretch()
-        
+
         self.items_display.raise_()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        
+        # Only update if items_display has been initialized
+        if not hasattr(self, 'items_display'):
+            return
+
+        scale_x = self.width() / 1920.0
+        scale_y = self.height() / 1080.0
+
+        self.items_display.setGeometry(
+            int(370 * scale_x),
+            int(20 * scale_y),
+            int(1200 * scale_x),
+            int(600 * scale_y)
+        )
+
+        self.left_container_inner.setFixedSize(
+            int(330 * scale_x),
+            int(960 * scale_y)
+        )
+
+        common_panel_width = int(300 * scale_x)
+        common_panel_height = int(420 * scale_y)
+        self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
+        self.json_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+        self.donate_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+
+        self.side_panel_container.setGeometry(20, 20, self.width() - 40, self.height() - 40)
 
     def eventFilter(self, obj, event):
         if obj == self.side_panel_container:

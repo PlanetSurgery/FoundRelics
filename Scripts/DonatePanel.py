@@ -39,7 +39,7 @@ class DonatePanel(QFrame):
         content_layout.setSpacing(8)
         layout.addWidget(content, 1)
         
-        instruction = QLabel("Please scan the QR code with your ENJ wallet to donate any amount you want. I greatly appreciate any support at all, even if just vocal! Also, make sure you got this from the original source!")
+        instruction = QLabel("Please scan the QR code with your ENJ wallet to donate any amount you want on Relaychain. I greatly appreciate any support at all, even if just vocal! Also, make sure you got this from the original source!")
         instruction.setWordWrap(True)
         instruction.setAlignment(Qt.AlignCenter)
         content_layout.addWidget(instruction)

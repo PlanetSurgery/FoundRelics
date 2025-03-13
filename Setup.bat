@@ -7,26 +7,18 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-REM Define a default installation path; change this if needed.
+REM Define the default installation path for Python.
 set "PYTHON_DEFAULT_PATH=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python310"
-set "PYTHON_EXE="
 
-REM Check if Python is available in the environment PATH.
-where python >nul 2>&1
-if errorlevel 1 (
-    echo Python is not in your PATH.
-    if exist "%PYTHON_DEFAULT_PATH%\python.exe" (
-        echo Found Python at %PYTHON_DEFAULT_PATH%.
-        set "PYTHON_EXE=%PYTHON_DEFAULT_PATH%\python.exe"
-    ) else (
-        echo Could not find Python at the default location.
-        echo Please install Python and ensure it is added to your PATH.
-        pause
-        exit /b 1
-    )
+REM Check if Python exists at the default location.
+if exist "%PYTHON_DEFAULT_PATH%\python.exe" (
+    echo Found Python at %PYTHON_DEFAULT_PATH%.
+    set "PYTHON_EXE=%PYTHON_DEFAULT_PATH%\python.exe"
 ) else (
-    echo Python is already in your PATH.
-    set "PYTHON_EXE=python"
+    echo Could not find Python at the default location: %PYTHON_DEFAULT_PATH%.
+    echo Please install Python at this location.
+    pause
+    exit /b 1
 )
 
 REM Upgrade pip.

@@ -62,6 +62,4 @@ _A Simple Query API Fetcher Tool_
 
 App Version: 0.01_05
 ---
-Notice: Please do not move panels behind item display; it will be unusable afterwards. Also note, this will bug out from extra modes most of the time as there is no proper run counter yet. One final thing, some items currently do not work due to having similar names. 
-
-Game Servers Are Currently Down
+Notice: Please do not move panels behind item display; it will be unusable afterwards. Also note, this will bug out from extra modes most of the time as there is no proper run counter yet. One final thing, some items currently do not work due to having similar names. === Game Servers Are Currently Down ===

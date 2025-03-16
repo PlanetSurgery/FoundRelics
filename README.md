@@ -47,7 +47,7 @@ _A Simple Query API Fetcher Tool_
 | Arcane Fragments         | ❌     |
 | Armor Gems               | ❌     |
 | Enjin Gems               | ✅     |
-| Flame Crystal            | ✅     |
+| Flame Crystal            | ✅⚠️   |
 | Golden Grind Chest       | ✅     |
 | Guardian's Chest         | ✅     |
 | Luminal Extract          | ✅     |

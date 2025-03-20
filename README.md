@@ -62,4 +62,4 @@ _A Simple Query API Fetcher Tool_
 
 App Version: 0.01_05
 ---
-Notice: A new major update is around the corner.
+Notice: A new update is around the corner.

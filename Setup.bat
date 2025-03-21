@@ -1,11 +1,29 @@
 @echo off
-REM Check for administrative privileges.
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo This script requires administrative privileges.
-    pause
-    exit /b 1
-)
+mode con: cols=54 lines=55
+color 0A
+
+title FoundRelics - Loot Tracker Tool
+
+echo.
+echo  [ FoundRelics - Loot Tracker Initialized ]
+ping localhost -n 2 >nul
+
+setlocal EnableDelayedExpansion
+
+cls
+echo =====================================================
+echo +               FoundRelics Tracker                 +
+echo =====================================================
+echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo.
+echo    * Name: FoundRelics
+echo    * Description: Loot Tracker
+echo    * Status: Installing Requirements
+echo.
+echo -----------------------------------------------------
+echo               Installing requirements...
+echo -----------------------------------------------------
+echo.
 
 REM Define the default installation path for Python.
 set "PYTHON_DEFAULT_PATH=C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python310"
@@ -21,14 +39,19 @@ if exist "%PYTHON_DEFAULT_PATH%\python.exe" (
     exit /b 1
 )
 
-REM Upgrade pip.
+echo.
 echo Upgrading pip...
 "%PYTHON_EXE%" -m pip install --upgrade pip
 
-REM Install required modules: requests and PyQt5.
+echo.
 echo Installing required modules: requests and PyQt5...
 "%PYTHON_EXE%" -m pip install requests PyQt5
 
 echo.
-echo Installation complete.
+echo -----------------------------------------------------
+echo             Modules installed succesfully.
+echo -----------------------------------------------------
+echo.
+echo Console: Installation complete.
+echo.
 pause

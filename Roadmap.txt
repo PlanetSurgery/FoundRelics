@@ -1,0 +1,6 @@
+1. Organization of code & bug fixes.
+2. Add multiple UI layouts.
+3. Add 'Achievements' panel: connect to wallet to check for NFTs by fans like DrLoot.
+4. Add 'Damage Calculator' panel from Hellbringer.
+5. Add 'NPC Info' panel.
+6.

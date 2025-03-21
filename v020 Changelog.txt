@@ -1,0 +1,4 @@
+1. New CMD prompt interface.
+2. Tool now attaches to game window.
+3. UI has been tweaked to fit most resolutions.
+4. Added close confirmation.

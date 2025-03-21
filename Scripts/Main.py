@@ -1,16 +1,16 @@
 # Scripts/Main.py
 # Created by PlanetSurgery
 
-import sys, os, json, requests, re
-
-import ctypes
+import sys, os, json, requests, re, ctypes
+from ctypes import wintypes
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QSizePolicy
-from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, pyqtSlot, QObject, QEvent, QPoint
+from PyQt5.QtCore import Qt, QTimer, QThread, QEvent, QPoint
 from PyQt5.QtGui import QCursor, QIcon
 
+import DataFetcher as Data
 from Buttons import MainPanelButtons
-from DataFetcher import DataFetcher
+from DataFetcher import DataFetcherThread, update_player_data, load_all_icons, check_github_update
 from DonatePanel import DonatePanel
 from MainPanel import MainPanel
 from MainParent import MainParent
@@ -31,8 +31,9 @@ class FullScreenOverlay(QMainWindow):
         self.market_gold = 0
         self.market_enj = 0
         self.map_counts = {}
-        self.last_progress = 0
+        self.last_progress = None
         self.last_gold_coins = 0
+        self.current_data_thread = None
 
         self.dragging = False
         self.drag_offset = QPoint(0, 0)
@@ -40,18 +41,46 @@ class FullScreenOverlay(QMainWindow):
         self.setWindowTitle("FoundRelics")
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.showFullScreen()
+        #self.showFullScreen()
         self.setup_widgets()
-
         self.setup_timers()
+        self.setup_window_check()
 
         self.dev_panel.json_button.clicked.connect(self.toggle_json_panel)
         self.dev_panel.item_selector_button.clicked.connect(self.toggle_item_selector_panel)
 
-        self.all_icons = self.load_all_icons()
+        self.all_icons = load_all_icons(self)
         self.item_selector_panel.populate_items(self.all_icons)
         self.item_selector_panel.set_items_display(self.items_display)
         
+    def setup_window_check(self):
+        self.window_check_timer = QTimer(self)
+        self.window_check_timer.timeout.connect(self.check_game_window)
+        self.window_check_timer.start(67)
+        
+    def check_game_window(self):
+        try:
+            hwnd = ctypes.windll.user32.FindWindowW(None, "LostRelics")
+            if hwnd:
+                rect = wintypes.RECT()
+                ctypes.windll.user32.GetWindowRect(hwnd, ctypes.byref(rect))
+                x = rect.left
+                y = rect.top
+                width = rect.right - rect.left
+                height = rect.bottom - rect.top
+                self.setGeometry(x, y, width, height)
+                if not self.isVisible():
+                    self.show()
+                    self.raise_()
+                if not hasattr(self, 'base_width'):
+                    self.base_width = width
+                    self.base_height = height
+            else:
+                if self.isVisible():
+                    self.hide()
+        except Exception as e:
+            print("Error checking game window:", e)
+
     def setup_timers(self):
         self.fetch_timer = QTimer(self)
         self.fetch_timer.timeout.connect(self.show_fetching_data)
@@ -59,7 +88,7 @@ class FullScreenOverlay(QMainWindow):
         self.fetch_timer.start(3000)
 
         self.data_timer = QTimer(self)
-        self.data_timer.timeout.connect(self.update_player_data)
+        self.data_timer.timeout.connect(lambda: update_player_data(self))
         self.data_timer.start(5000)
 
         self.pos_timer = QTimer(self)
@@ -67,64 +96,53 @@ class FullScreenOverlay(QMainWindow):
         self.pos_timer.start(16)
         
         self.github_timer = QTimer(self)
-        self.github_timer.timeout.connect(self.check_github_update)
-        self.github_timer.start(120000)
-        self.check_github_update()
+        self.github_timer.timeout.connect(lambda: check_github_update(self))
+        self.github_timer.start(1800000)
+        check_github_update(self)
         
-    def check_github_update(self):
-        url = "https://raw.githubusercontent.com/PlanetSurgery/FoundRelics/refs/heads/main/README.md"
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                readme_text = response.text
-                version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
-                if version_match:
-                    version = version_match.group(1).strip()
-                    if version != "0.01_05":
-                        message = "2 Minute Log:: Project has been updated to version " + version + ". Update for latest changes!"
-                        self.dev_panel.log_message(message)
-                        print(message)
-                    else:
-                        print("2 Minute Log:: Your version is up to date.")
-                else:
-                    message = "No Version Found"
-                    self.dev_panel.log_message(message)
-                    print(message)
-                
-                notice_match = re.search(r'Notice:\s*(.*)', readme_text)
-                if notice_match:
-                    notice_text = notice_match.group(1).strip()
-                    if notice_text:
-                        notice_message = "2 Minute Log:: Notice: " + notice_text
-                        self.dev_panel.log_message(notice_message)
-                        print(notice_message)
-            else:
-                message = "Failed to fetch GitHub README. HTTP status code: " + str(response.status_code)
-                self.dev_panel.log_message(message)
-                print(message)
-        except Exception as e:
-            message = "Error fetching GitHub README: " + str(e)
-            self.dev_panel.log_message(message)
-            print(message)
+        self.update_buttons_timer = QTimer(self)
+        self.update_buttons_timer.timeout.connect(self.update_dev_panel_button_scaling)
+        self.update_buttons_timer.start(16)  
 
     def update_positions(self):
         if self.dragging:
             global_pos = QCursor.pos()
-            parent_pos = self.centralWidget().mapFromGlobal(global_pos)
+            parent_pos = self.mapFromGlobal(global_pos)
             new_top_left = parent_pos - self.drag_offset
-            self.side_panel_container.move(new_top_left)
-        
+
+            game_width = 0
+            game_height = 0
+            hwnd = ctypes.windll.user32.FindWindowW(None, "LostRelics")
+            if hwnd:
+                rect = wintypes.RECT()
+                ctypes.windll.user32.GetWindowRect(hwnd, ctypes.byref(rect))
+                game_width = rect.right - rect.left
+                game_height = rect.bottom - rect.top
+
+            margin = 20
+            panel_width = self.side_panel_container.width()
+            panel_height = self.side_panel_container.height()
+
+            min_x = 10
+            max_x = game_width
+            min_y = 10
+            max_y = game_height
+
+            new_x = max(min_x, min(new_top_left.x(), max_x))
+            new_y = max(min_y, min(new_top_left.y(), max_y))
+
+            self.side_panel_container.move(new_x, new_y)
+
+            
     def setup_widgets(self):
         central_widget = QWidget(self)
         central_widget.setObjectName("central_widget")
         central_widget.setStyleSheet("#central_widget { background: transparent; }")
         self.setCentralWidget(central_widget)
 
-        # Compute scaling factors based on current full-screen resolution vs. 1920x1080
         scale_x = self.width() / 1920.0
         scale_y = self.height() / 1080.0
 
-        # Scale the items display geometry
         self.items_display = ItemsDisplay(central_widget, num_items=self.num_items)
         self.items_display.setGeometry(
             int(370 * scale_x),
@@ -133,41 +151,38 @@ class FullScreenOverlay(QMainWindow):
             int(600 * scale_y)
         )
 
-        # Store left container as an instance variable so we can update its size on resize
+        panel_scale = min(scale_x, scale_y)
+
         self.left_container_inner = QWidget()
         self.left_container_inner.setFixedSize(
-            int(330 * scale_x),
-            int(960 * scale_y)
+            int(330 * panel_scale),
+            int(960 * panel_scale)
         )
 
         left_layout = QVBoxLayout(self.left_container_inner)
-        left_layout.setContentsMargins(0, int(15 * scale_y), 0, int(15 * scale_y))
-        left_layout.setSpacing(int(15 * scale_y))
+        left_layout.setContentsMargins(0, int(15 * panel_scale), 0, int(15 * panel_scale))
+        left_layout.setSpacing(int(15 * panel_scale))
 
-        # Create panels
         self.dev_panel = MainPanel()
         self.json_panel = JSONDataPanel()
         self.item_selector_panel = ItemTrackerPanel()
         self.donate_panel = DonatePanel()
         self.side_panel_container = MainParent(self.left_container_inner, central_widget)
 
-        # Hide additional panels by default
         self.json_panel.setVisible(False)
         self.item_selector_panel.setVisible(False)
         self.donate_panel.setVisible(False)
 
-        # Set panel sizes based on scaling factors
-        common_panel_width = int(300 * scale_x)
-        common_panel_height = int(420 * scale_y)
+        common_panel_width = int(300 * panel_scale)
+        common_panel_height = int(420 * panel_scale)
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
-        self.json_panel.setFixedSize(common_panel_width, int(400 * scale_y))
-        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * scale_y))
-        self.donate_panel.setFixedSize(common_panel_width, int(400 * scale_y))
+        self.json_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
+        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
+        self.donate_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
 
         self.side_panel_container.setGeometry(20, 20, self.width() - 40, self.height() - 40)
         self.side_panel_container.installEventFilter(self)
 
-        # Add a stretch and your buttons layout to the dev_panel
         dev_layout = self.dev_panel.layout()
         if dev_layout is None:
             dev_layout = QVBoxLayout(self.dev_panel)
@@ -182,7 +197,6 @@ class FullScreenOverlay(QMainWindow):
         )
         dev_layout.addWidget(self.main_panel_buttons)
 
-        # Add panels to left layout
         left_layout.addWidget(self.dev_panel)
         left_layout.addWidget(self.json_panel)
         left_layout.addWidget(self.item_selector_panel)
@@ -191,10 +205,31 @@ class FullScreenOverlay(QMainWindow):
 
         self.items_display.raise_()
 
+    def update_dev_panel_button_scaling(self):
+        scale = self.width() / 1920.0
+        exponent = 1 + 1.5 * max(0, 1 - scale)
+        new_font_size = max(6, int(14 * (scale ** exponent)))
+        padding_v = max(2, int(6 * (scale ** exponent)))
+        padding_h = max(4, int(10 * (scale ** exponent)))
+        self.dev_panel.json_button.setStyleSheet(f"""
+            background-color: #444444;
+            color: #cccccc;
+            padding: {padding_v}px {padding_h}px;
+            font-size: {new_font_size}px;
+            border: 1px solid #666666;
+            border-radius: 4px;
+        """)
+        self.dev_panel.item_selector_button.setStyleSheet(f"""
+            background-color: #444444;
+            color: #cccccc;
+            padding: {padding_v}px {padding_h}px;
+            font-size: {new_font_size}px;
+            border: 1px solid #666666;
+            border-radius: 4px;
+        """)
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        
-        # Only update if items_display has been initialized
         if not hasattr(self, 'items_display'):
             return
 
@@ -208,21 +243,23 @@ class FullScreenOverlay(QMainWindow):
             int(600 * scale_y)
         )
 
+        panel_scale = min(scale_x, scale_y)
+
         self.left_container_inner.setFixedSize(
-            int(330 * scale_x),
-            int(960 * scale_y)
+            int(330 * panel_scale),
+            int(960 * panel_scale)
         )
 
-        common_panel_width = int(300 * scale_x)
-        common_panel_height = int(420 * scale_y)
+        common_panel_width = int(300 * panel_scale)
+        common_panel_height = int(420 * panel_scale)
         self.dev_panel.setFixedSize(common_panel_width, common_panel_height)
-        self.json_panel.setFixedSize(common_panel_width, int(400 * scale_y))
-        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * scale_y))
-        self.donate_panel.setFixedSize(common_panel_width, int(400 * scale_y))
-
+        self.json_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
+        self.item_selector_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
+        self.donate_panel.setFixedSize(common_panel_width, int(400 * panel_scale))
         self.side_panel_container.setGeometry(20, 20, self.width() - 40, self.height() - 40)
 
     def eventFilter(self, obj, event):
+        from PyQt5.QtCore import QEvent 
         if obj == self.side_panel_container:
             if event.type() == QEvent.MouseButtonPress:
                 if event.button() == Qt.LeftButton and event.pos().y() < 30:
@@ -263,161 +300,8 @@ class FullScreenOverlay(QMainWindow):
         self.items_display.item_counts = [0] * self.items_display.num_items
         self.items_display.update()
 
-    def load_all_icons(self):
-        from PyQt5.QtGui import QPixmap
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        icons_folder = os.path.join(base_dir, "..", "Icons")
-        all_items = []
-        for root, dirs, files in os.walk(icons_folder):
-            for file in files:
-                if file.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".gif")):
-                    path = os.path.join(root, file)
-                    pix = QPixmap(path)
-                    if pix.isNull():
-                        print(f"Failed to load icon: {path}")
-                        pix = QPixmap(64, 64)
-                        pix.fill(Qt.gray)
-                    all_items.append((pix, path))
-        return all_items
-
     def show_fetching_data(self):
         self.dev_panel.log_message("Fetching data...")
-
-    def update_player_data(self):
-        self.dev_panel.log_message("Fetching data in background...")
-        self.thread = QThread()
-        self.worker = DataFetcher()
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.fetch)
-
-        self.worker.data_fetched.connect(self.handle_data)
-        self.worker.error.connect(self.handle_error)
-
-        self.worker.data_fetched.connect(self.thread.quit)
-        self.worker.error.connect(self.thread.quit)
-        self.worker.data_fetched.connect(self.worker.deleteLater)
-        self.worker.error.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-
-        self.thread.start()
-
-    def handle_data(self, data):
-        if data:
-            self.dev_panel.log_message("We have grabbed data.")
-            echelon = data.get("PlayerLevel")
-            player_name = data.get("PlayerName", "")
-            self.dev_panel.set_player_name(f"{player_name} || Echelon {echelon}")
-                        
-            try:
-                current_xp = int(data.get("PlayerLevelProgress", 0))
-            except (ValueError, TypeError):
-                current_xp = 0
-
-            try:
-                max_xp = int(data.get("PlayerLevelMax", 0))
-            except (ValueError, TypeError):
-                max_xp = 0
-
-            formatted_current = "{:,}".format(current_xp)
-            formatted_max = "{:,}".format(max_xp)
-            percentage = (current_xp / max_xp) * 100 if max_xp != 0 else 0
-            final_string = f"{formatted_current} XP / {formatted_max} XP || {percentage:.0f}%"
-            self.dev_panel.set_player_level(final_string)
-
-            new_progress = data.get("PlayerLevelProgress", None)
-            last_adv = data.get("LastAdventure", {})
-            gold_coins = None
-            for item in last_adv.get("Items", []):
-                if item.get("Name", "").strip() == "Gold Coins":
-                    gold_coins = item.get("Amount", None)
-                    break
-            if new_progress is not None and self.last_progress is not None:
-                changed = new_progress - self.last_progress
-                if 0 < changed <= 500:
-                    self.change = True
-                if self.last_progress is None:
-                    self.last_progress = new_progress
-                    self.last_gold_coins = gold_coins
-                elif new_progress != self.last_progress and (gold_coins is None or gold_coins != self.last_gold_coins) and (self.change is False or (self.change is True and gold_coins is not None)):
-                    self.change = False
-                    self.last_progress = new_progress
-                    self.last_gold_coins = gold_coins
-
-                    if self.skip:
-                        self.skip = False
-                        return
-                        
-                    if gold_coins is not None:
-                        self.run_count += 1
-                    
-                    time_taken = data.get("TimeTaken", 0)
-                    try:
-                        time_taken = float(time_taken)
-                    except Exception:
-                        time_taken = 0
-                    self.run_time_total += time_taken
-
-                    adventure_name = last_adv.get("AdventureName", None)
-                    if adventure_name:
-                        if adventure_name in self.map_counts:
-                            self.map_counts[adventure_name] += 1
-                        else:
-                            self.map_counts[adventure_name] = 1
-
-                        favorite_map = max(self.map_counts, key=self.map_counts.get)
-                        self.dev_panel.set_fav_map(favorite_map)
-                        
-                    market_gold_total = 0
-                    market_enj_total = 0
-                    for item in last_adv.get("Items", []):
-                        try:
-                            market_value = float(item.get("MarketValue", 0))
-                        except (ValueError, TypeError):
-                            market_value = 0
-                        if item.get("Name", None) not in ["Enjin Gem", "Waygate Orb", "Gold Coins"]:
-                            amount = item.get("Amount", 1)
-                            if item.get("IsBlockchain", False):
-                                market_enj_total += round((market_value * amount) / 100, 2)
-                            else:
-                                market_gold_total += market_value * amount
-
-                    self.market_gold += market_gold_total
-                    self.market_enj += market_enj_total
-                    self.dev_panel.set_market_gold("{:,}".format(self.market_gold))
-                    self.dev_panel.set_market_enj("{:,}".format(self.market_enj))
-
-                    import os
-                    index = -1
-                    for icon in self.item_selector_panel.selected_items:
-                        index += 1
-                        base_name = os.path.splitext(os.path.basename(icon.file_path))[0].strip()
-                        self.dev_panel.log_message("Checking icon: " + base_name)
-                        matching_item = next((item for item in last_adv.get("Items", []) if base_name in item.get("Name", "")), None)
-                        if matching_item:
-                            try:
-                                count = 0
-                                if base_name in ["Enjin Gem", "Flame Crystal", "Golden Grind Chest"]:
-                                    if base_name == "Enjin Gem":
-                                        count = round(matching_item.get("Amount", 1) / 100, 2)
-                                    else:
-                                        count = matching_item.get("Amount", 1)
-                                        self.run_count += 1
-                                    self.items_display.item_counts[index] += round(count, 2)
-                                else:
-                                    self.items_display.item_counts[index] += 1
-                            except Exception as e:
-                                self.dev_panel.log_message("Error updating count for " + base_name + ": " + str(e))
-
-            self.dev_panel.set_run_count(self.run_count)
-            self.dev_panel.set_run_time(self.run_time_total)
-            json_text = json.dumps(data, indent=2)
-            self.json_panel.set_json_text(json_text)
-            self.dev_panel.json_button.setEnabled(True)
-        else:
-            self.dev_panel.log_message("Failed to load data: Empty response.")
-
-    def handle_error(self, error_msg):
-        self.dev_panel.log_message("Failed to load data: " + error_msg)
 
     def toggle_json_panel(self):
         is_visible = not self.json_panel.isVisible()
@@ -425,10 +309,10 @@ class FullScreenOverlay(QMainWindow):
         if is_visible:
             self.item_selector_panel.setVisible(False)
             self.donate_panel.setVisible(False)
-            self.dev_panel.json_button.setText("Hide JSON Data")
-            self.dev_panel.item_selector_button.setText("Show Tracked Items")
+            self.dev_panel.json_button.setText("Hide Data")
+            self.dev_panel.item_selector_button.setText("Show Items")
         else:
-            self.dev_panel.json_button.setText("Show JSON Data")
+            self.dev_panel.json_button.setText("Show Data")
 
     def toggle_item_selector_panel(self):
         is_visible = not self.item_selector_panel.isVisible()
@@ -436,15 +320,15 @@ class FullScreenOverlay(QMainWindow):
         if is_visible:
             self.json_panel.setVisible(False)
             self.donate_panel.setVisible(False)
-            self.dev_panel.item_selector_button.setText("Hide Tracked Items")
-            self.dev_panel.json_button.setText("Show JSON Data")
+            self.dev_panel.item_selector_button.setText("Hide Items")
+            self.dev_panel.json_button.setText("Show Data")
             if not self.item_selector_panel.selected_items:
                 default_paths = set(self.items_display.original_icon_paths)
                 self.item_selector_panel.highlight_defaults(default_paths)
             selected_pixmaps = self.item_selector_panel.get_selected_pixmaps()
             self.items_display.update_icons(selected_pixmaps, self.items_display.current_icon_paths)
         else:
-            self.dev_panel.item_selector_button.setText("Show Tracked Items")
+            self.dev_panel.item_selector_button.setText("Show Items")
     
     def on_donate(self):
         is_visible = not self.donate_panel.isVisible()
@@ -457,7 +341,6 @@ def change_console_icon(icon_path):
     WM_SETICON = 0x80
     ICON_SMALL = 0
     ICON_BIG = 1
-
     hwnd = ctypes.windll.kernel32.GetConsoleWindow()
     if hwnd:
         hicon = ctypes.windll.user32.LoadImageW(0, icon_path, 1, 32, 32, 0x00000010)

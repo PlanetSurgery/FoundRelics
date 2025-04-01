@@ -30,7 +30,7 @@ if not "!status!"=="!lastStatus!" (
     echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	echo.
     echo    * Status: Game !status!
-    echo    * Version 0.02_0
+    echo    * Version 0.02_1
     echo.
     if "!status!"=="Active" (
          echo -------------------------------------------

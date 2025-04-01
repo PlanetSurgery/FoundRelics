@@ -1,43 +1,47 @@
-# Scripts/ItemTrackerPanel.py
+# \Scripts\ItemTrackerPanel.py
 # Created by PlanetSurgery
+# Assisted by OpenAI
 
+# Py Imports ------------
 import os, sys, ctypes
+
 from ctypes import wintypes
 
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QWidget, QScrollArea, QLabel, QGridLayout, QPushButton
 from PyQt5.QtCore import Qt, QEvent, QTimer
 from PyQt5.QtGui import QPixmap, QPainter, QColor
+# End of Imports --------
 
-from Buttons import SCROLLBAR_STYLES, create_title_bar
-
-class WINDOWPLACEMENT(ctypes.Structure):
-    _fields_ = [
-        ("length", wintypes.UINT),
-        ("flags", wintypes.UINT),
-        ("showCmd", wintypes.UINT),
-        ("ptMinPosition", wintypes.POINT),
-        ("ptMaxPosition", wintypes.POINT),
-        ("rcNormalPosition", wintypes.RECT),
-    ]
-SW_MAXIMIZE = 3
+# Our Imports -----------
+from UIUtilities import Create_TitleBar, SCROLLBAR_STYLES
+from GameWindowMixin import GameWindowMixin
+# End of Imports --------
 
 class SelectableIcon(QLabel):
-    def __init__(self, pixmap, file_path, toggle_callback, thumb_size=64, parent=None):
-        super().__init__(parent)
+    def Init_Vars(self, pixmap, file_path, toggle_callback, thumb_size=64):
         self.thumb_size = thumb_size
         self.original_pixmap = pixmap
         self.file_path = file_path
         self.selected = False
         self.toggle_callback = toggle_callback
-        self.setFixedSize(self.thumb_size, self.thumb_size)
+        
+    def Setup_Params(self, pixmap, thumb_size):
+        #self.setFixedSize(self.thumb_size, self.thumb_size)
         self.setPixmap(pixmap.scaled(self.thumb_size, self.thumb_size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        
+    def __init__(self, pixmap, file_path, toggle_callback, thumb_size=64, parent=None):
+        super().__init__(parent)
+        self.Init_Vars(pixmap, file_path, toggle_callback, thumb_size)
+        self.Setup_Params(pixmap, thumb_size)
 
+    # QWidget Override
     def mousePressEvent(self, event):
         self.selected = not self.selected
         if self.toggle_callback:
             self.toggle_callback(self)
         self.update()
 
+    # QPainter Override
     def paintEvent(self, event):
         super().paintEvent(event)
         if self.selected:
@@ -46,32 +50,30 @@ class SelectableIcon(QLabel):
             painter.setPen(Qt.NoPen)
             painter.drawRect(self.rect())
 
-class ItemTrackerPanel(QFrame):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setObjectName("ItemSelectorPanel")
-        self.setStyleSheet(f"""
-            QFrame#ItemSelectorPanel {{
-                background-color: #0F0F0F;
-                border: 2px solid #002244;
-                border-radius: 4px;
-            }}
-            QLabel {{
-                color: #dddddd;
-            }}
-        """ + SCROLLBAR_STYLES)
+class ItemTrackerPanel(GameWindowMixin, QFrame):
+    def Init_Objects(self, parent):
+        QWidget.__init__(self, parent)
+        GameWindowMixin.__init__(self)
         
+    def Init_Vars(self):
         self.selected_items = [] 
         self.items_display = None
         self.icon_widgets = [] 
-
+        self.game_window_width = self.width()
+        self.game_window_height = self.height()
+    
+    def Setup_Panel(self):
+        self.setObjectName("ItemSelectorPanel")
+        self.setStyleSheet(f"QFrame#ItemSelectorPanel {{ background-color: #0F0F0F; border: 2px solid #002244; border-radius: 4px; }} QLabel {{ color: #dddddd; }}"+SCROLLBAR_STYLES)
+        
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         
-        self.title_bar = create_title_bar("Item Selector")
+        self.title_bar = Create_TitleBar("Item Selector")
         layout.addWidget(self.title_bar)
         self.lbl_title = self.title_bar.findChild(QLabel)
+        
         self.btn_close = None
         for btn in self.title_bar.findChildren(QPushButton):
             if btn.text() == "X":
@@ -100,33 +102,23 @@ class ItemTrackerPanel(QFrame):
         self.icon_grid.setSpacing(8)
         self.icon_grid.setContentsMargins(0, 0, 0, 0)
         self.scroll_area.setWidget(self.icon_container)
-       
+        
+    def Setup_Timers(self):
         self.update_timer = QTimer(self)
-        self.update_timer.timeout.connect(self.update_scaling)
+        self.update_timer.timeout.connect(self.Update_Scaling)
         self.update_timer.start(16)
 
         self.check_timer = QTimer(self)
-        self.check_timer.timeout.connect(self.check_game_window)
-        self.check_timer.start(67)
+        self.check_timer.timeout.connect(self.Check_Window)
+        self.check_timer.start(16)
         
-        self.game_window_width = self.width()
-        self.game_window_height = self.height()
+    def __init__(self, parent=None):
+        self.Init_Objects(parent)
+        self.Init_Vars()
+        self.Setup_Panel()
+        self.Setup_Timers()
 
-    def check_game_window(self):
-        try:
-            hwnd = ctypes.windll.user32.FindWindowW(None, "LostRelics")
-            if hwnd:
-                self.game_hwnd = hwnd
-                rect = ctypes.wintypes.RECT()
-                ctypes.windll.user32.GetWindowRect(hwnd, ctypes.byref(rect))
-                self.game_window_x = rect.left
-                self.game_window_y = rect.top
-                self.game_window_width = rect.right - rect.left
-                self.game_window_height = rect.bottom - rect.top
-        except Exception as e:
-            print("Error checking game window in DonatePanel:", e)
-            
-    def update_scaling(self):
+    def Update_Scaling(self):
         base_resolution = 1920.0
         scale = (self.game_window_width / base_resolution) if self.game_window_width else (self.width() / base_resolution)
         exponent = 1 + 1.5 * max(0, 1 - scale)
@@ -159,20 +151,22 @@ class ItemTrackerPanel(QFrame):
                     color: #555555;
                 }}
             """)
-            
+
+    # QWidget Override
     def resizeEvent(self, event):
         super().resizeEvent(event)
         viewport_width = self.scroll_area.viewport().width()
         self.icon_container.setMinimumWidth(viewport_width)
-        self.update_icon_layout()
+        self.Update_Layout()
 
+    # QWidget Override
     def showEvent(self, event):
         super().showEvent(event)
         viewport_width = self.scroll_area.viewport().width()
         self.icon_container.setMinimumWidth(viewport_width)
-        self.update_icon_layout()
+        self.Update_Layout()
 
-    def update_icon_layout(self):
+    def Update_Layout(self):
         while self.icon_grid.count():
             item = self.icon_grid.takeAt(0)
             if item.widget():
@@ -189,6 +183,7 @@ class ItemTrackerPanel(QFrame):
         cols = 3
         row = 0
         col = 0
+        
         for widget in self.icon_widgets:
             self.icon_grid.addWidget(widget, row, col)
             col += 1
@@ -196,21 +191,23 @@ class ItemTrackerPanel(QFrame):
                 col = 0
                 row += 1
 
-    def set_items_display(self, items_display):
+    def Set_Display(self, items_display):
         self.items_display = items_display
 
-    def populate_items(self, all_items):
-        self.icon_widgets = []
+    def Populate_Display(self, all_items):
         while self.icon_grid.count():
             item = self.icon_grid.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
+              
+        self.icon_widgets = []  
         for pix, path in all_items:
-            icon_widget = SelectableIcon(pix, path, self.on_icon_toggled, thumb_size=64)
+            icon_widget = SelectableIcon(pix, path, self.On_Toggle, thumb_size=64)
             self.icon_widgets.append(icon_widget)
-        self.update_icon_layout()
+            
+        self.Update_Layout()
 
-    def on_icon_toggled(self, icon_widget):
+    def On_Toggle(self, icon_widget):
         max_items = self.items_display.num_items if self.items_display else 10
 
         if icon_widget.selected:
@@ -229,11 +226,12 @@ class ItemTrackerPanel(QFrame):
         if self.items_display:
             selected_pixmaps = [w.original_pixmap for w in self.selected_items]
             selected_paths = [w.file_path for w in self.selected_items] 
-            self.items_display.update_icons(selected_pixmaps, selected_paths)
+            self.items_display.Update_Icons(selected_pixmaps, selected_paths)
 
-    def highlight_defaults(self, default_paths):
+    def Highlight_Defaults(self, default_paths):
         if self.selected_items:
             return
+            
         for widget in self.icon_widgets:
             if widget and widget.file_path in default_paths:
                 widget.selected = True
@@ -246,7 +244,7 @@ class ItemTrackerPanel(QFrame):
         if self.items_display:
             pixmaps = [w.original_pixmap for w in self.selected_items]
             paths = [w.file_path for w in self.selected_items]
-            self.items_display.update_icons(pixmaps, paths)
+            self.items_display.Update_Icons(pixmaps, paths)
 
-    def get_selected_pixmaps(self):
+    def Get_Selected_Map(self):
         return [icon.original_pixmap for icon in self.selected_items]

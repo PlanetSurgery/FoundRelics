@@ -1,7 +1,7 @@
 # 💻 FoundRelics  
 _A Simple Query API Fetcher Tool_
 
-> **Notes:** Must have activated an orb to use; please purchase one to continue. Also note, panels is draggable -- Item display will be movable as well in a future update.
+> **Notes:** Must have activated an orb to use; please purchase one to continue. Also note, panels is draggable -- Item display will be movable as well in a future update. Finally to note, 1st run is tracked late as a gimmick workaround for a previous error, temporarily. 
 
 ---
 

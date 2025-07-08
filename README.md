@@ -40,14 +40,13 @@ _A Simple Query API Fetcher Tool_
 
    ============
 
-### Tested Items (In Communication w/ Dev Team to Fix)
+### Tested Items (Many were fixed in latest update. Please let me know if any do not work.)
 
 | Item                     | Status | 
 |--------------------------|--------|
-| Arcane Fragments         | ❌     |
-| Armor Gems               | ❌     |
+| Arcane Fragments         | ✅     |
+| Armor Gems               | ✅     |
 | Enjin Gems               | ✅     |
-| Flame Crystal            | ✅⚠️   |
 | Golden Grind Chest       | ✅     |
 | Guardian's Chest         | ✅     |
 | Luminal Extract          | ✅     |

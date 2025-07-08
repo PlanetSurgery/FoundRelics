@@ -53,7 +53,7 @@ def Check_Github(main_window):
             version_match = re.search(r'App Version:\s*([^\s]+)', readme_text)
             if version_match:
                 version = version_match.group(1).strip()
-                if version != "0.02_0":
+                if version != "0.02_11":
                     message = "30 Minute Log:: Project has been updated to version " + version + ". Update for latest changes!"
                     main_window.dev_panel.Log_Message(message)
                     print(message)

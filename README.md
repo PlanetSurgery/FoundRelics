@@ -20,4 +20,4 @@ Enjoy keeping track of all collected loot, automatically as you complete your ru
 
 Join us in collecting some loot!
 
-v0.3_1
+v0.3_0

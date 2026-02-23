@@ -1,5 +1,5 @@
 # FoundRelics
-Lost Relics Loot Tracker
+Lost Relics Loot Tracker Addon
 
 Track your loot.
 Know your earnings.

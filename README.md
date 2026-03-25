@@ -20,6 +20,6 @@ Enjoy keeping track of all collected loot, automatically as you complete your ru
 
 Join us in collecting some loot!
 
-Message: Personal goals coming next. More details to come. Also, please leave some feedback at 'PSurgeryOfficial@gmail.com' or suggestions if you guys have any!
+Message: Personal goals and new design replacement is being worked on. Please leave some feedback at 'PSurgeryOfficial@gmail.com' or suggestions if you guys have any! Thank you for supporting the project still!
 
 v0.3_21

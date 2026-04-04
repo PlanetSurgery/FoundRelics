@@ -20,6 +20,6 @@ Enjoy keeping track of all collected loot, automatically as you complete your ru
 
 Join us in collecting some loot!
 
-Message: Personal goals and new design replacement is being worked on, looking to arrive no later than 1 day after the game update this upcoming Tuesday. Please leave some feedback at 'PSurgeryOfficial@gmail.com' or suggestions if you guys have any! Thank you for supporting the project still! 
+Message: New goals panel and redesign update has been delayed for at least 1 week.
 
 v0.3_21

@@ -11,7 +11,7 @@ This tool utilizes the built in API system provided by Lost Relics. You can get 
 This tool:
 * Loot dropped from adventures.
 * Loot dropped from containers.
-* Provides 24h information on your latest earnings.
+* Provides information on your latest earnings.
 * Provides a collectible book to track all earned items, including DrLoot NFTs!
 
 By downloading, you agree to the policy provided and understand there is no official connection to the development team Codebit Labs Pty Ltd. This is a fan-made tool.

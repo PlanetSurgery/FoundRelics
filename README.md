@@ -20,6 +20,6 @@ Enjoy keeping track of all collected loot, automatically as you complete your ru
 
 Join us in collecting some loot!
 
-Message: New goals panel and redesign update has been delayed for at least 1 week.
+Message: New goals panel and redesign update has been delayed for the time being.
 
 v0.3_21
